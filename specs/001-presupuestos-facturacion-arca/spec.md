@@ -14,6 +14,20 @@ del catálogo. Da de alta artículos nuevos además de actualizar costos, el có
 por proveedor y los artículos nuevos toman un margen predeterminado de Configuración. Esto amplía RF-20 a
 RF-24 y cambia el formato de RF-23 (agrega la columna Descripción).
 
+## Clarifications
+
+### Session 2026-10-08
+
+- Q: ¿Hasta qué porcentaje se puede cargar el margen de utilidad de un artículo (y el margen
+  predeterminado de Configuración)? → A: de 0 a 1000 %; admite márgenes altos y frena errores groseros.
+- Q: ¿Qué valores puede tomar la alícuota de IVA en la pantalla Configuración? → A: solo las que acepta
+  ARCA: 0; 2,5; 5; 10,5; 21 y 27.
+- Q: ¿Qué pasa con un artículo que el proveedor dejó de vender? → A: no hay bajas; los artículos quedan
+  siempre activos y se corrigen a mano.
+- Q: Cuando una planilla trae un artículo que ya existe, ¿se actualiza también su descripción o solo el
+  precio de costo? → A: solo el precio de costo; la descripción se mantiene.
+- Q: ¿Con qué número tiene que arrancar la numeración de los presupuestos? → A: 1.
+
 ## User Scenarios & Testing *(mandatory)*
 
 Las usuarias son las dos dueñas de la óptica, que atienden el local ("la operadora"). Hoy arman los
@@ -319,8 +333,10 @@ presupuesto de origen de cada una.
 
 - **FR-006**: El sistema MUST permitir administrar desde una pantalla protegida la alícuota de IVA, la
   condición fiscal (Responsable Inscripto o Monotributo), el tope de identificación del receptor, el
-  múltiplo de redondeo comercial y el margen predeterminado para artículos nuevos (0 a 100 %) (RF-63).
+  múltiplo de redondeo comercial y el margen predeterminado para artículos nuevos (0 a 1000 %) (RF-63).
 - **FR-007**: El sistema MUST rechazar un múltiplo de redondeo menor a 0,01 (RF-72).
+- **FR-007a**: El sistema MUST admitir como alícuota de IVA únicamente 0; 2,5; 5; 10,5; 21 o 27, las que
+  acepta ARCA, y rechazar cualquier otro valor indicando los valores válidos.
 - **FR-008**: El sistema MUST NOT mostrar ni permitir editar en pantalla el certificado digital ni el punto
   de venta de ARCA (RF-64).
 - **FR-009**: Al grabar un cambio de alícuota, condición fiscal o múltiplo, el sistema MUST recalcular y
@@ -342,7 +358,8 @@ presupuesto de origen de cada una.
   configurado y guardarlo ya redondeado (RF-56, RF-58).
 - **FR-014**: El sistema MUST recalcular el precio de venta al modificar costo o margen, y mostrarlo como
   dato de solo lectura (RF-45, RF-70).
-- **FR-015**: El sistema MUST aceptar márgenes de utilidad entre 0 % y 100 % (RF-21).
+- **FR-015**: El sistema MUST aceptar márgenes de utilidad entre 0 % y 1000 %, ambos inclusive, y
+  rechazar valores fuera de ese rango indicando el rango válido (RF-21, ampliado por clarificación).
 
 **Importación de planillas por proveedor**
 
@@ -353,7 +370,8 @@ presupuesto de origen de cada una.
   faltantes, columnas de más o encabezados distintos, e informar que el formato no es el esperado (RF-78,
   RF-79).
 - **FR-044**: Por cada fila cuyo código ya exista en ese proveedor, el sistema MUST actualizar el precio de
-  costo y recalcular el precio de venta, sin cambiar descripción ni margen (RF-47).
+  costo y recalcular el precio de venta, sin cambiar descripción ni margen (RF-47). En esas filas la
+  descripción de la planilla se ignora y puede venir vacía.
 - **FR-045**: Por cada fila cuyo código no exista en ese proveedor, el sistema MUST crear el artículo con
   la descripción de la planilla, el precio de costo y el margen predeterminado vigente, y calcular su
   precio de venta. Si el margen predeterminado no está configurado, el sistema MUST NOT iniciar la
@@ -375,8 +393,8 @@ presupuesto de origen de cada una.
 - **FR-016**: El sistema MUST grabar presupuestos con los datos del cliente (Apellido, Nombre, DNI
   obligatorios; Domicilio, Email y Teléfono opcionales) guardados dentro del presupuesto (RF-05, RF-38,
   RF-61, RF-74).
-- **FR-017**: El sistema MUST numerar cada presupuesto al grabarlo por primera vez con el último número +
-  1, sin repetir números con grabaciones simultáneas (RF-06, RNF-13).
+- **FR-017**: El sistema MUST numerar cada presupuesto al grabarlo por primera vez, empezando por 1, con el
+  último número + 1, sin repetir números con grabaciones simultáneas (RF-06, RNF-13).
 - **FR-018**: El sistema MUST manejar los estados Borrador y Final; solo se modifica en Borrador, y un
   presupuesto Final MUST NOT modificarse ni volver a Borrador por ninguna vía (RF-04, RF-07, RF-08, RF-67).
 - **FR-019**: El sistema MUST permitir buscar artículos por código o descripción y, al seleccionar uno,
@@ -499,7 +517,9 @@ presupuesto de origen de cada una.
   de importar.
 - AC-15 del PRD (código inexistente = no actualizado) queda reemplazado: un código inexistente ahora da de
   alta el artículo.
-- La importación no da de baja artículos; los artículos discontinuados se corrigen a mano.
+- No hay bajas ni desactivación de artículos en esta versión: todos quedan siempre activos y disponibles
+  para cargar líneas. Ni la carga manual ni la importación eliminan artículos; un discontinuado se corrige
+  a mano (por ejemplo, en su descripción).
 - El margen predeterminado no tiene valor inicial: hasta que la operadora lo configure, la importación se
   bloquea en lugar de crear artículos con un margen supuesto (constitución, principio III).
 - Fuera de alcance según el PRD: Facturas A, notas de crédito/débito y anulaciones, envío automático por
@@ -508,13 +528,9 @@ presupuesto de origen de cada una.
 - Hasta contar con el certificado de homologación, la autorización de comprobantes se desarrolla y prueba
   contra un simulador de ARCA que permite reproducir autorización, rechazo y falta de respuesta. Nunca se
   emite contra ARCA producción durante el desarrollo.
-- El margen de utilidad se limita a 0–100 % como dice RF-21 (pendiente de confirmar con el responsable:
-  en óptica suele superarse el 100 %).
-- La numeración de presupuestos arranca en 1 (pendiente de confirmar el número inicial).
+- La numeración de presupuestos arranca en 1 (confirmado en la clarificación del 2026-10-08).
 - El tope de identificación inicial es $10.000.000 y la lista de datos del PDF de factura (RF-30) se valida
   con el contador de la óptica.
-- La alícuota de IVA admite cualquier valor de 0 a 100; queda pendiente limitarla a las alícuotas que acepta
-  ARCA (0; 2,5; 5; 10,5; 21; 27).
 - Un presupuesto Final origina como máximo una factura autorizada; mientras tenga una emisión pendiente o
   autorizada no se puede iniciar otra.
 - Los datos del emisor (razón social, domicilio, CUIT, ingresos brutos, inicio de actividades), el

@@ -38,6 +38,6 @@
 - ARCA, CAE, Factura B/C y el QR son términos del dominio fiscal, no detalles de implementación.
 - FR-004 (hash con sal) y FR-012 (fórmula de precio) vienen literales del PRD (RNF-14, RF-21) y se
   mantienen como requisitos verificables.
-- Quedan supuestos pendientes de confirmar con el responsable del proyecto (margen 0–100 %, número
-  inicial, tope inicial, alícuotas válidas, datos de RF-30): están en Assumptions y conviene cerrarlos con
-  `/speckit-clarify`.
+- Clarificación del 2026-10-08 (5 preguntas): margen 0–1000 %, alícuotas solo las de ARCA, sin bajas de
+  artículos, la importación no cambia descripciones y la numeración arranca en 1. Quedan para validar con
+  el contador el tope de identificación inicial y los datos del PDF de factura (RF-30).
