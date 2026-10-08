@@ -9,6 +9,10 @@
 **Input**: User description: "@PRD.md" (PRD-001: Presupuestos y Facturación Electrónica Online para Óptica
 Sistema). Los identificadores RF-xx, RNF-xx y AC-xx remiten a ese documento, que es la fuente de verdad
 de los requerimientos; esta especificación los organiza por recorrido de usuario.
+Enmienda al PRD (pedido del usuario, 2026-10-08): la planilla Excel por proveedor es la fuente de ingreso
+del catálogo. Da de alta artículos nuevos además de actualizar costos, el código en el proveedor es único
+por proveedor y los artículos nuevos toman un margen predeterminado de Configuración. Esto amplía RF-20 a
+RF-24 y cambia el formato de RF-23 (agrega la columna Descripción).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -44,9 +48,10 @@ correctas, y comprobar que sin sesión no se obtiene ningún dato.
 
 ### User Story 2 - Catálogo con precio de venta calculado y configuración del negocio (Priority: P1)
 
-La operadora carga los artículos con su costo de proveedor (precio final, IVA incluido) y su margen; el
-sistema calcula y guarda el precio de venta. Desde la pantalla de Configuración administra la alícuota de
-IVA, la condición fiscal, el tope de identificación del receptor y el múltiplo de redondeo comercial.
+La operadora da de alta los proveedores y puede cargar o corregir artículos a mano, con su proveedor, su
+costo (precio final, IVA incluido) y su margen; el sistema calcula y guarda el precio de venta. Desde la
+pantalla de Configuración administra la alícuota de IVA, la condición fiscal, el tope de identificación
+del receptor, el múltiplo de redondeo comercial y el margen predeterminado para artículos nuevos.
 
 **Why this priority**: los presupuestos toman sus precios del catálogo; sin catálogo no hay presupuesto.
 Es además el origen del error de precio que el sistema viene a eliminar.
@@ -73,12 +78,58 @@ contra los ejemplos numéricos del PRD.
    se puede modificar (AC-81).
 8. **Given** la pantalla de Configuración, **When** ingreso un múltiplo de 0,001, **Then** no se acepta y
    se indica que el mínimo es 0,01 (AC-82).
-9. **Given** un artículo con código de proveedor "ABC-1", **When** intento grabar otro con el mismo código,
-   **Then** el sistema lo rechaza; "abc-1" se acepta como un código distinto.
+9. **Given** un artículo del proveedor "Lentes SA" con código "ABC-1", **When** intento grabar otro de
+   "Lentes SA" con el mismo código, **Then** el sistema lo rechaza; "abc-1" en "Lentes SA" o "ABC-1" en
+   otro proveedor se aceptan como artículos distintos.
 
 ---
 
-### User Story 3 - Armar y cerrar un presupuesto (Priority: P1)
+### User Story 3 - Importar la planilla de precios de un proveedor (Priority: P1)
+
+La operadora elige un proveedor y carga la planilla Excel que ese proveedor le envía. El sistema da de
+alta los artículos nuevos, actualiza el costo de los que ya existen, recalcula los precios de venta y
+muestra un resumen con lo creado, lo actualizado y lo que no pudo procesar, con la razón.
+
+**Why this priority**: la planilla es la fuente de ingreso del catálogo. Sin ella, los artículos se
+cargarían uno por uno y volvería el error de transcripción que el sistema viene a eliminar.
+
+**Independent Test**: con un proveedor dado de alta, importar planillas con filas nuevas, existentes,
+inválidas y con formato incorrecto, y verificar el catálogo resultante y el resumen.
+
+**Acceptance Scenarios**:
+
+1. **Given** el proveedor "Lentes SA" sin artículos, margen predeterminado 50 %, Responsable Inscripto, IVA
+   21 y múltiplo $0,01, **When** importo una planilla con la fila "ABC-1", "Armazón metal", $1.210,
+   **Then** se crea el artículo de "Lentes SA" con esa descripción, costo $1.210,00, margen 50 % y precio de
+   venta $1.815,00, y el resumen lo informa como creado.
+2. **Given** IVA 21, múltiplo $0,01 y un artículo "ABC-1" de "Lentes SA" con costo $1.210 y margen 50 %,
+   **When** importo para "Lentes SA" la fila "ABC-1" con $2.420, **Then** el costo pasa a $2.420,00, la
+   venta a $3.630,00, el margen y la descripción no cambian y el resumen lo informa como actualizado
+   (AC-14).
+3. **Given** "ABC-1" existe en "Lentes SA" y en "Ópticos SRL", **When** importo una planilla para "Lentes
+   SA", **Then** solo cambia el artículo de "Lentes SA".
+4. **Given** una planilla con una fila de precio vacío, otra con precio "abc" y otras válidas, **When** la
+   importo, **Then** se procesan las válidas y las dos se listan como no procesadas con la razón "precio
+   inválido" (AC-75).
+5. **Given** una planilla con una fila de código nuevo y descripción vacía, **When** la importo, **Then**
+   esa fila no se procesa y se lista con la razón "falta la descripción".
+6. **Given** una planilla con una columna de más, una faltante o encabezados distintos, **When** la
+   importo, **Then** no se crea ni actualiza ningún artículo y se informa que el formato no es el esperado
+   (AC-76).
+7. **Given** una planilla con filas de precio -100 y 0, **When** la importo, **Then** se procesan y se
+   listan con la indicación "actualizado con precio negativo o cero" (AC-90).
+8. **Given** una planilla con el mismo código en dos filas, **When** la importo, **Then** ninguna de esas
+   filas se procesa y se listan con la razón "código repetido en la planilla".
+9. **Given** un catálogo de 10.000 artículos y una planilla de 10.000 filas, **When** la importo, **Then**
+   termina en menos de 120 segundos (AC-62).
+10. **Given** un artículo de "Lentes SA" que no figura en la planilla, **When** la importo, **Then** el
+    artículo queda sin cambios.
+11. **Given** el margen predeterminado sin configurar, **When** intento importar, **Then** el sistema no
+    procesa la planilla e indica que primero hay que configurar el margen predeterminado.
+
+---
+
+### User Story 4 - Armar y cerrar un presupuesto (Priority: P1)
 
 La operadora carga los datos del cliente, agrega líneas buscando artículos del catálogo, ajusta cantidad y
 descuento, y graba. El presupuesto queda en Borrador (editable) hasta que lo pasa a Final, momento en que
@@ -122,7 +173,7 @@ modificarlo en Borrador, pasarlo a Final y comprobar que ya no admite cambios.
 
 ---
 
-### User Story 4 - PDF y búsqueda de presupuestos (Priority: P2)
+### User Story 5 - PDF y búsqueda de presupuestos (Priority: P2)
 
 La operadora descarga el PDF de un presupuesto Final para entregarlo o enviarlo a mano por email o
 WhatsApp, y encuentra presupuestos anteriores por fecha o datos del cliente.
@@ -148,14 +199,14 @@ Borrador no lo permite y ejecutar las búsquedas de los ejemplos.
 
 ---
 
-### User Story 5 - Facturar un presupuesto Final (Priority: P2)
+### User Story 6 - Facturar un presupuesto Final (Priority: P2)
 
 Desde un presupuesto Final, la operadora presiona Facturar; el sistema arma el comprobante a consumidor
 final (Factura B o C según la condición fiscal), obtiene el CAE de ARCA y guarda la factura vinculada al
 presupuesto. La operadora descarga el PDF de la factura.
 
 **Why this priority**: elimina la carga manual en el sitio de ARCA, pero depende de que existan
-presupuestos Final (historias 2 y 3).
+presupuestos Final (historias 2 a 4).
 
 **Independent Test**: con un presupuesto Final y ARCA respondiendo (o su simulador), facturar y verificar
 tipo de comprobante, identificación del receptor, importes enviados, CAE guardado y PDF.
@@ -184,7 +235,7 @@ tipo de comprobante, identificación del receptor, importes enviados, CAE guarda
 
 ---
 
-### User Story 6 - Emisión segura ante fallas de ARCA (Priority: P2)
+### User Story 7 - Emisión segura ante fallas de ARCA (Priority: P2)
 
 Si ARCA rechaza el pedido o no responde, la operadora ve el motivo y decide cuándo reintentar. El sistema
 nunca deja un comprobante duplicado ni inventa un resultado: ante la duda, verifica en ARCA o pide
@@ -211,7 +262,7 @@ responder, facturar y reintentar, verificando cada resultado.
 
 ---
 
-### User Story 7 - Consultar facturas emitidas (Priority: P3)
+### User Story 8 - Consultar facturas emitidas (Priority: P3)
 
 La operadora lista y busca las facturas por fecha, número de comprobante y datos del cliente, y ve el
 presupuesto de origen de cada una.
@@ -234,6 +285,10 @@ presupuesto de origen de cada una.
 
 - Artículo con precio de venta negativo o cero (por ejemplo, por un costo mal cargado): no puede usarse
   en una línea con precio negativo; se informa "El precio unitario no puede ser negativo" (RF-17, AC-12).
+- Planilla vacía (solo encabezados): no cambia nada y el resumen lo informa.
+- Error inesperado a mitad de la importación: no se aplica ningún cambio de esa planilla, para no dejar
+  el catálogo a medio actualizar.
+- Cambio de margen predeterminado: afecta solo a los artículos que se creen después, no a los existentes.
 - Total del presupuesto exactamente igual al tope de identificación: receptor sin identificar (AC-77).
 - Corte de internet: catálogo y presupuestos siguen operando; solo la facturación queda pendiente hasta
   reintentar.
@@ -263,8 +318,8 @@ presupuesto de origen de cada una.
 **Configuración**
 
 - **FR-006**: El sistema MUST permitir administrar desde una pantalla protegida la alícuota de IVA, la
-  condición fiscal (Responsable Inscripto o Monotributo), el tope de identificación del receptor y el
-  múltiplo de redondeo comercial (RF-63).
+  condición fiscal (Responsable Inscripto o Monotributo), el tope de identificación del receptor, el
+  múltiplo de redondeo comercial y el margen predeterminado para artículos nuevos (0 a 100 %) (RF-63).
 - **FR-007**: El sistema MUST rechazar un múltiplo de redondeo menor a 0,01 (RF-72).
 - **FR-008**: El sistema MUST NOT mostrar ni permitir editar en pantalla el certificado digital ni el punto
   de venta de ARCA (RF-64).
@@ -274,10 +329,12 @@ presupuesto de origen de cada una.
 
 **Catálogo**
 
-- **FR-010**: El sistema MUST permitir cargar y modificar artículos con código autonumérico, código en el
-  proveedor, descripción, precio de costo (final, con IVA) y margen de utilidad (RF-20).
-- **FR-011**: El código en el proveedor MUST ser único y distinguir mayúsculas de minúsculas ("ABC-1" y
-  "abc-1" son artículos distintos).
+- **FR-010**: El sistema MUST permitir cargar y modificar artículos con código autonumérico, proveedor,
+  código en el proveedor, descripción, precio de costo (final, con IVA) y margen de utilidad (RF-20).
+- **FR-011**: El código en el proveedor MUST ser único dentro de cada proveedor y distinguir mayúsculas de
+  minúsculas ("ABC-1" y "abc-1" son artículos distintos); proveedores distintos pueden repetir códigos.
+- **FR-011a**: El sistema MUST permitir dar de alta proveedores y modificar su nombre, que es obligatorio
+  y único.
 - **FR-012**: Con Responsable Inscripto, el sistema MUST calcular el precio de venta como costo × (1 +
   margen / 100), equivalente a los tres pasos de RF-21 con alícuota única; con Monotributo, como costo × (1
   + margen / 100) sin descontar IVA (RF-21, RF-84).
@@ -286,6 +343,32 @@ presupuesto de origen de cada una.
 - **FR-014**: El sistema MUST recalcular el precio de venta al modificar costo o margen, y mostrarlo como
   dato de solo lectura (RF-45, RF-70).
 - **FR-015**: El sistema MUST aceptar márgenes de utilidad entre 0 % y 100 % (RF-21).
+
+**Importación de planillas por proveedor**
+
+- **FR-042**: El sistema MUST permitir importar una planilla Excel para un proveedor elegido por la
+  operadora, con tres columnas en este orden y con estos encabezados: Código en el proveedor, Descripción
+  y Precio de Costo (precio final del proveedor, con IVA) (RF-22, RF-23, enmendado).
+- **FR-043**: El sistema MUST rechazar completa, sin cambiar ningún artículo, una planilla con columnas
+  faltantes, columnas de más o encabezados distintos, e informar que el formato no es el esperado (RF-78,
+  RF-79).
+- **FR-044**: Por cada fila cuyo código ya exista en ese proveedor, el sistema MUST actualizar el precio de
+  costo y recalcular el precio de venta, sin cambiar descripción ni margen (RF-47).
+- **FR-045**: Por cada fila cuyo código no exista en ese proveedor, el sistema MUST crear el artículo con
+  la descripción de la planilla, el precio de costo y el margen predeterminado vigente, y calcular su
+  precio de venta. Si el margen predeterminado no está configurado, el sistema MUST NOT iniciar la
+  importación e indica que se configure primero.
+- **FR-046**: El sistema MUST NOT procesar una fila con precio vacío o no numérico ("precio inválido"), una
+  fila nueva sin descripción ("falta la descripción") ni las filas cuyo código aparezca más de una vez en
+  la planilla ("código repetido en la planilla") (RF-80).
+- **FR-047**: El sistema MUST aceptar precios negativos o cero y listar esas filas con la indicación
+  "actualizado con precio negativo o cero" (RF-80, RF-93).
+- **FR-048**: Al terminar, el sistema MUST mostrar un resumen con la cantidad de artículos creados y
+  actualizados y la lista de filas no procesadas con su número de fila, código y razón (RF-24).
+- **FR-049**: Los artículos del proveedor que no figuren en la planilla MUST quedar sin cambios, y los de
+  otros proveedores no se tocan.
+- **FR-050**: Una importación MUST aplicarse completa o no aplicarse: si se interrumpe, el catálogo queda
+  como estaba antes.
 
 **Presupuestos**
 
@@ -364,10 +447,14 @@ presupuesto de origen de cada una.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Artículo**: código autonumérico, código en el proveedor (único, sensible a mayúsculas), descripción,
-  precio de costo, margen de utilidad y precio de venta calculado y redondeado.
-- **Configuración**: alícuota de IVA, condición fiscal, tope de identificación, múltiplo de redondeo.
-  Valores únicos para todo el sistema.
+- **Proveedor**: nombre único. Agrupa sus artículos y es el destino de cada importación.
+- **Artículo**: código autonumérico, proveedor, código en el proveedor (único dentro del proveedor,
+  sensible a mayúsculas), descripción, precio de costo, margen de utilidad y precio de venta calculado y
+  redondeado.
+- **Importación**: proveedor, fecha, cantidades de creados y actualizados, y filas no procesadas o con
+  precio negativo o cero, con su razón. Es el resumen que ve la operadora.
+- **Configuración**: alícuota de IVA, condición fiscal, tope de identificación, múltiplo de redondeo y
+  margen predeterminado para artículos nuevos. Valores únicos para todo el sistema.
 - **Presupuesto**: número, fecha, estado (Borrador/Final), datos del cliente (Apellido, Nombre, DNI,
   Domicilio, Email, Teléfono) y total. Cerrado e inmutable al pasar a Final.
 - **Línea de presupuesto**: código, descripción y precio unitario copiados del artículo al cargarla;
@@ -383,7 +470,7 @@ presupuesto de origen de cada una.
 
 - **SC-001**: El 100 % de los precios unitarios de los presupuestos coincide con el precio de venta del
   catálogo vigente al cargar la línea: no hay transcripción manual de precios.
-- **SC-002**: Todos los ejemplos numéricos del PRD (AC-11, AC-13, AC-29,
+- **SC-002**: Todos los ejemplos numéricos del PRD (AC-11, AC-13, AC-14, AC-29,
   AC-36, AC-38, AC-39, AC-70 a AC-74, AC-83 a AC-85) dan exactamente el importe esperado, al centavo.
 - **SC-003**: Con 10.000 presupuestos guardados, 19 de cada 20 búsquedas por apellido muestran resultados
   en menos de 2 segundos desde que se presiona Buscar (RNF-01).
@@ -396,14 +483,25 @@ presupuesto de origen de cada una.
   dato del cliente ni de los artículos.
 - **SC-008**: Todos los escenarios de aceptación pasan en Chrome y Edge, versión estable vigente y la
   inmediata anterior (RNF-03).
+- **SC-010**: Una planilla de proveedor de hasta 10.000 filas se importa en menos de 120 segundos, y la
+  operadora no carga a mano ningún artículo que venga en la planilla (RNF-12).
+- **SC-011**: El 100 % de las filas no procesadas aparece en el resumen con su razón: ninguna fila se
+  pierde sin aviso.
 - **SC-009**: Un catálogo de 10.000 artículos se recalcula completo tras un cambio de configuración sin que
   la operadora deba editar ningún artículo.
 
 ## Assumptions
 
-- **Fuera de esta especificación** (quedan para una feature posterior, según el plan actual del proyecto):
-  importación de precios desde Excel (RF-22 a RF-24, RF-47, RF-78 a RF-80, RF-93, RNF-12, AC-14, AC-15,
-  AC-62, AC-75, AC-76, AC-90) y backups con su aviso (RNF-02, RNF-05, RNF-06, RF-77, AC-52 a AC-55).
+- **Fuera de esta especificación** (quedan para una feature posterior): backups con su aviso (RNF-02,
+  RNF-05, RNF-06, RF-77, AC-52 a AC-55).
+- La planilla es un archivo .xlsx con los datos en la primera hoja y los encabezados en la primera fila.
+  Como cada proveedor envía su propio formato, la operadora lo adapta a las tres columnas de FR-042 antes
+  de importar.
+- AC-15 del PRD (código inexistente = no actualizado) queda reemplazado: un código inexistente ahora da de
+  alta el artículo.
+- La importación no da de baja artículos; los artículos discontinuados se corrigen a mano.
+- El margen predeterminado no tiene valor inicial: hasta que la operadora lo configure, la importación se
+  bloquea en lugar de crear artículos con un margen supuesto (constitución, principio III).
 - Fuera de alcance según el PRD: Facturas A, notas de crédito/débito y anulaciones, envío automático por
   email o WhatsApp, ABM de clientes y de usuarios con roles, eliminación de presupuestos, stock, cobros e
   impresión directa.

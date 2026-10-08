@@ -31,7 +31,10 @@
 
 ## Notes
 
-- Validado en una iteración. Se corrigió SC-002, que citaba AC-14 (importación Excel, fuera de esta spec).
+- Validado en una iteración. Se corrigió SC-002, que citaba AC-14 cuando la importación estaba fuera.
+- Revalidado el 2026-10-08 tras incorporar la importación Excel por proveedor (User Story 3, FR-042 a
+  FR-050): alta y actualización, código único por proveedor y margen predeterminado de Configuración,
+  según las respuestas del usuario. Todos los ítems siguen pasando.
 - ARCA, CAE, Factura B/C y el QR son términos del dominio fiscal, no detalles de implementación.
 - FR-004 (hash con sal) y FR-012 (fórmula de precio) vienen literales del PRD (RNF-14, RF-21) y se
   mantienen como requisitos verificables.
