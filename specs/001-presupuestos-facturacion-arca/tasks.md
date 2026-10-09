@@ -84,7 +84,7 @@ juntas, después de pasar `dotnet test Optica.slnx` y, en `frontend/`, `npm test
 - [X] T024 Create the test host `AppDePrueba` (WebApplicationFactory with a temporary SQLite file per test, `FakeTimeProvider`, `EspiaArca` implementing `IServicioArca` with programmable responses and recorded calls, `TiempoEsperaSegundos` reducido, a way to set `RemoteIpAddress` per request — loopback by default, a LAN address on demand — so tests can exercise `solo-pc-local`, and `IngresarAsync()` helper filled in by US1) in `tests/Optica.Tests/AppDePrueba.cs`
 - [X] T025 [P] Implement the centavos line calculator (precio con descuento, precio final, total; no `Math.round` sobre importes en `number`) in `frontend/src/calculos/lineas.ts`
 - [X] T026 [P] Implement the typed API client in `frontend/src/api/cliente.ts`
-- [ ] T027 [P] Create `frontend/src/marca.ts` (reads `Marca/branding.json`), `frontend/src/estilos/tokens.css` and `frontend/src/estilos/componentes.css` following the `frontend-design` skill (colors only from branding, tokens only)
+- [X] T027 [P] Create `frontend/src/marca.ts` (reads `Marca/branding.json`), `frontend/src/estilos/tokens.css` and `frontend/src/estilos/componentes.css` following the `frontend-design` skill (colors only from branding, tokens only)
 - [ ] T028 [P] Create `CampoConError` (label, input, mensaje de error junto al campo por clave, FR-041) in `frontend/src/comunes/CampoConError.tsx`; write the failing test `frontend/src/comunes/CampoConError.test.tsx` first
 - [ ] T029 Create the app shell (logo from `marca.ts`, navegación, rutas vacías por pantalla, fonts imported from @fontsource) in `frontend/src/App.tsx` and `frontend/src/main.tsx`
 

@@ -1,0 +1,42 @@
+/* Tokens de diseño (skill frontend-design). El primario y el fondo llegan de Marca/branding.json vía
+   marca.ts (--marca-primario, --marca-fondo); este es el único archivo con colores escritos a mano. */
+:root {
+  --color-primario: var(--marca-primario);
+  --color-primario-oscuro: color-mix(in srgb, var(--color-primario) 75%, #000000);
+  --color-primario-suave: color-mix(in srgb, var(--color-primario) 8%, var(--color-fondo));
+  --color-fondo: var(--marca-fondo);
+  --color-superficie: #f3f5fa;
+  --color-borde: #d9dde7;
+  --color-texto: #1b1d24;
+  --color-texto-suave: #5d6375;
+  --color-sobre-primario: #ffffff;
+  --color-error: #b3261e;
+  --color-error-suave: #fdecea;
+  --color-exito: #1e7a3c;
+  --color-exito-suave: #e8f5ec;
+  --color-aviso: #9a6400;
+  --color-aviso-suave: #fff4dc;
+
+  --fuente-titulos: 'Montserrat', sans-serif;
+  --fuente-texto: 'Barlow', sans-serif;
+
+  --texto-xs: 0.8125rem;
+  --texto-sm: 0.9375rem;
+  --texto-md: 1rem;
+  --texto-lg: 1.25rem;
+  --texto-xl: 1.625rem;
+
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 0.75rem;
+  --espacio-4: 1rem;
+  --espacio-5: 1.5rem;
+  --espacio-6: 2rem;
+
+  --radio: 6px;
+  --sombra: 0 1px 3px color-mix(in srgb, var(--color-texto) 12%, transparent);
+  --anillo-foco: 0 0 0 3px var(--color-primario-suave);
+  --alto-logo: 72px;
+  --linea-encabezado: 4px;
+  --ancho-maximo: 1200px;
+}
