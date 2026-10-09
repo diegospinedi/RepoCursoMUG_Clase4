@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,9 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
 
     public static readonly IPAddress IpRemota = IPAddress.Parse("192.168.1.50");
 
+    /// <summary>Contraseña que usa <see cref="IngresarAsync"/>.</summary>
+    public const string Contrasena = "clave-de-prueba";
+
     private readonly string _base = Path.Combine(Path.GetTempPath(), $"optica-{Guid.NewGuid():N}.db");
     private readonly Dictionary<string, string?> _ajustes = [];
 
@@ -30,6 +34,8 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
     public EspiaArca Arca { get; } = new();
 
     public string RutaBase => _base;
+
+    public string RutaRegistroSeguridad => Path.ChangeExtension(_base, ".seguridad.log");
 
     /// <summary>Configuración adicional (por ejemplo "Arca:TiempoEsperaSegundos").</summary>
     public AppDePrueba Con(string clave, string? valor)
@@ -43,7 +49,7 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
         builder.UseEnvironment("Testing");
         builder.UseSetting("ConnectionStrings:Optica", $"Data Source={_base}");
         builder.UseSetting("Arca:TiempoEsperaSegundos", "1");
-        builder.UseSetting("RegistroSeguridad:Archivo", Path.ChangeExtension(_base, ".seguridad.log"));
+        builder.UseSetting("RegistroSeguridad:Archivo", RutaRegistroSeguridad);
         foreach (var (clave, valor) in _ajustes) builder.UseSetting(clave, valor);
 
         builder.ConfigureServices(servicios =>
@@ -54,6 +60,17 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
             servicios.AddSingleton<IServicioArca>(Arca);
             servicios.AddSingleton<IStartupFilter, FiltroIpDePrueba>();
         });
+    }
+
+    /// <summary>Cliente con sesión iniciada; define la contraseña si todavía no está definida.</summary>
+    public async Task<HttpClient> IngresarAsync()
+    {
+        var cliente = CreateClient();
+        await cliente.PostAsJsonAsync("/api/acceso/definir", new { contrasena = Contrasena });
+        var r = await cliente.PostAsJsonAsync("/api/acceso/ingresar", new { contrasena = Contrasena });
+        if (r.StatusCode != HttpStatusCode.NoContent)
+            throw new InvalidOperationException($"No se pudo ingresar: {(int)r.StatusCode}");
+        return cliente;
     }
 
     /// <summary>Cliente cuyos pedidos llegan desde otro equipo de la red local.</summary>
@@ -68,8 +85,8 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
     {
         await base.DisposeAsync();
         SqliteConnection.ClearAllPools();
-        foreach (var sufijo in new[] { "", "-wal", "-shm" })
-            if (File.Exists(_base + sufijo)) File.Delete(_base + sufijo);
+        foreach (var archivo in new[] { _base, _base + "-wal", _base + "-shm", RutaRegistroSeguridad })
+            if (File.Exists(archivo)) File.Delete(archivo);
     }
 
     private sealed class FiltroIpDePrueba : IStartupFilter

@@ -48,7 +48,7 @@ public class SesionTests
             {
                 var r = await cliente.SendAsync(new HttpRequestMessage(new HttpMethod(metodo), ruta));
                 Assert.True(r.StatusCode == HttpStatusCode.Unauthorized, $"{metodo} {ruta} respondió {(int)r.StatusCode}");
-                Assert.Equal(0, (await r.Content.ReadAsByteArrayAsync()).Length);
+                Assert.Empty(await r.Content.ReadAsByteArrayAsync());
             }
         }
     }
