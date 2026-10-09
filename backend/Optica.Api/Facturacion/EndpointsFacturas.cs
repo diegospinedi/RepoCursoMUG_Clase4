@@ -22,6 +22,22 @@ public static class EndpointsFacturas
         app.MapPost("/api/presupuestos/{id:int}/factura", async (int id, ServicioEmision servicio) =>
             Responder(await servicio.FacturarAsync(id)));
 
+        app.MapPost("/api/facturas/{id:int}/reintentar", async (int id, ServicioEmision servicio) =>
+            await servicio.ReintentarAsync(id) switch
+            {
+                ResultadoEmision.Autorizada a => Results.Ok(Emitida(a.Factura)),
+                var otro => Responder(otro),
+            });
+
+        app.MapPost("/api/facturas/{id:int}/confirmar-revision", async (int id, ServicioEmision servicio) =>
+            await servicio.ConfirmarRevisionAsync(id) switch
+            {
+                ResultadoEmision.Descartada => Results.Ok(new { estado = EstadoFactura.Descartada }),
+                ResultadoEmision.NoBloqueada => Results.Problem(statusCode: 409, type: "emision-no-bloqueada",
+                    title: "Solo se confirma la revisión de una emisión bloqueada."),
+                _ => Results.NotFound(),
+            });
+
         app.MapGet("/api/facturas/{id:int}", async (int id, OpticaDbContext db) =>
             await db.Set<Factura>().AsNoTracking().Include(f => f.Presupuesto!).ThenInclude(p => p.Lineas).SingleOrDefaultAsync(f => f.Id == id) is { } f
                 ? Results.Ok(Detalle(f))
@@ -49,6 +65,11 @@ public static class EndpointsFacturas
         ResultadoEmision.Rechazada x => Results.Problem(statusCode: 502, type: "arca-rechazo",
             title: $"ARCA rechazó el comprobante: {x.Codigo} — {x.Descripcion}",
             extensions: new Dictionary<string, object?> { ["codigo"] = x.Codigo, ["descripcion"] = x.Descripcion }),
+        ResultadoEmision.Bloqueada b => Results.Problem(statusCode: 409, type: "emision-bloqueada",
+            title: $"El número {b.Factura.NumeroCompleto} figura autorizado en ARCA con otro importe. Revisá el punto de venta en ARCA y después confirmá la revisión.",
+            extensions: new Dictionary<string, object?> { ["facturaId"] = b.Factura.Id }),
+        ResultadoEmision.NoPendiente => Results.Problem(statusCode: 409, type: "emision-no-pendiente",
+            title: "Solo se reintenta una emisión pendiente."),
         ResultadoEmision.SinRespuesta s => Results.Problem(statusCode: 504, type: "arca-sin-respuesta",
             title: s.FacturaId is null
                 ? "ARCA no respondió. No se registró ninguna factura; probá de nuevo más tarde."

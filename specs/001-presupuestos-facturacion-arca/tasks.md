@@ -283,7 +283,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 ### Implementation for User Story 7
 
 - [X] T104 [US7] Implement `ServicioEmision.Reintentar` (consulta previa; mismo total → recupera; no existe → envía; otro total → Bloqueada) and `ServicioEmision.ConfirmarRevision` (Bloqueada → Descartada) in `backend/Optica.Api/Facturacion/ServicioEmision.cs`
-- [ ] T105 [US7] Implement `POST /api/facturas/{id}/reintentar` and `POST /api/facturas/{id}/confirmar-revision`, and include `emision: { facturaId, estado }` in `GET /api/presupuestos/{id}`, in `backend/Optica.Api/Facturacion/EndpointsFacturas.cs` and `backend/Optica.Api/Presupuestos/EndpointsPresupuestos.cs`
+- [X] T105 [US7] Implement `POST /api/facturas/{id}/reintentar` and `POST /api/facturas/{id}/confirmar-revision`, and include `emision: { facturaId, estado }` in `GET /api/presupuestos/{id}`, in `backend/Optica.Api/Facturacion/EndpointsFacturas.cs` and `backend/Optica.Api/Presupuestos/EndpointsPresupuestos.cs`
 - [ ] T106 [US7] Implement `EstadoEmision.tsx` and show it in the budget editor (FR-038a) in `frontend/src/facturas/EstadoEmision.tsx` and `frontend/src/presupuestos/EditorPresupuesto.tsx`
 
 ---

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Optica.Api.Datos;
+using Optica.Api.Facturacion;
 
 namespace Optica.Api.Presupuestos;
 
@@ -31,9 +32,16 @@ public static class EndpointsPresupuestos
         });
 
         grupo.MapGet("/{id:int}", async (int id, OpticaDbContext db) =>
-            await db.Set<Presupuesto>().AsNoTracking().Include(p => p.Lineas).SingleOrDefaultAsync(p => p.Id == id) is { } p
-                ? Results.Ok(Dto(p))
-                : Results.NotFound());
+        {
+            var p = await db.Set<Presupuesto>().AsNoTracking().Include(x => x.Lineas).SingleOrDefaultAsync(x => x.Id == id);
+            if (p is null) return Results.NotFound();
+            // La emisión viva del presupuesto (Pendiente, Bloqueada o Autorizada), para mostrar su estado (FR-038a).
+            var emision = await db.Set<Factura>().AsNoTracking()
+                .Where(f => f.PresupuestoId == id && f.Estado != EstadoFactura.Descartada)
+                .Select(f => new EmisionDto(f.Id, f.Estado.ToString()))
+                .SingleOrDefaultAsync();
+            return Results.Ok(Dto(p, emision));
+        });
 
         grupo.MapPost("", async (PedidoPresupuesto pedido, ServicioPresupuestos servicio) =>
             Responder(await servicio.CrearAsync(pedido), creado: true));
