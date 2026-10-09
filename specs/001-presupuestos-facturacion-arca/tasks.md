@@ -233,7 +233,7 @@ Borrador no lo permite y ejecutar las búsquedas de los ejemplos.
 
 - [X] T085 [US5] Implement `BusquedaPresupuestos` (filtros combinados con "Y" sobre columnas normalizadas, `LIKE '%texto%'`, rango de fechas inclusive con un solo límite admitido) and `GET /api/presupuestos` in `backend/Optica.Api/Presupuestos/BusquedaPresupuestos.cs` and `backend/Optica.Api/Presupuestos/EndpointsPresupuestos.cs`
 - [X] T086 [P] [US5] Implement `PdfPresupuesto` with QuestPDF (logo `Marca/logo.png`, color primario from `branding.json`, fonts from `Recursos/`, importes `$ 1.815,00`, leyenda "Precios finales, IVA incluido") in `backend/Optica.Api/Presupuestos/PdfPresupuesto.cs`
-- [ ] T087 [US5] Implement `GET /api/presupuestos/{id}/pdf` (409 for Borrador) in `backend/Optica.Api/Presupuestos/EndpointsPresupuestos.cs`
+- [X] T087 [US5] Implement `GET /api/presupuestos/{id}/pdf` (409 for Borrador) in `backend/Optica.Api/Presupuestos/EndpointsPresupuestos.cs`
 - [ ] T088 [P] [US5] Implement the search screen in `frontend/src/presupuestos/BuscarPresupuestos.tsx` and the "Descargar PDF" button (disabled in Borrador) in `frontend/src/presupuestos/EditorPresupuesto.tsx`
 
 ---

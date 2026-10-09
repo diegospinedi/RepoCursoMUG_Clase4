@@ -64,6 +64,7 @@ builder.Services.AddSingleton<CandadoImportacion>();
 // Presupuestos.
 builder.Services.AddScoped<Numerador>();
 builder.Services.AddScoped<ServicioPresupuestos>();
+builder.Services.AddSingleton<RecursosPdf>();
 
 // ARCA: solo el simulador hasta tener certificado de homologación (AGENTS.md). Nunca producción.
 builder.Services.Configure<OpcionesArca>(builder.Configuration.GetSection("Arca"));
