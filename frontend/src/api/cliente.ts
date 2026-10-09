@@ -33,6 +33,8 @@ export class ErrorValidacion extends ErrorApi {
 export interface OpcionesPedido {
   method?: 'GET' | 'POST' | 'PUT'
   body?: unknown
+  /** En el ingreso, un 401 es "contraseña incorrecta", no una sesión vencida. */
+  sinAvisoDeSesion?: boolean
 }
 
 export async function pedir<T = unknown>(ruta: string, opciones: OpcionesPedido = {}): Promise<T> {
@@ -45,7 +47,7 @@ export async function pedir<T = unknown>(ruta: string, opciones: OpcionesPedido 
   })
 
   if (respuesta.status === 401) {
-    window.dispatchEvent(new Event(EVENTO_SESION_VENCIDA))
+    if (!opciones.sinAvisoDeSesion) window.dispatchEvent(new Event(EVENTO_SESION_VENCIDA))
     throw new ErrorApi(401)
   }
 
