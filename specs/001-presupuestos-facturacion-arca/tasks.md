@@ -278,7 +278,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 ### Tests for User Story 7 (write first, must fail)
 
 - [X] T102 [US7] Write failing tests in `tests/Optica.Tests/Facturacion/FallasArcaTests.cs`: rechazo → 502 `arca-rechazo` con código y descripción y ninguna factura registrada (AC-20); sin respuesta → 504 `arca-sin-respuesta` con un mensaje que dice que ARCA no respondió, que la emisión quedó pendiente y que se puede reintentar (FR-035), Pendiente y ninguna llamada extra a ARCA (AC-60); reintento de una autorizada con el mismo total → Autorizada con el CAE recuperado y sin un segundo `SolicitarCae` (AC-64); reintento de una no autorizada → `Consultar` primero y recién después `SolicitarCae` (AC-65); número autorizado con otro total → 409 `emision-bloqueada`, estado Bloqueada, sin emitir ni recuperar (AC-89); reintentar una Bloqueada → 409; `confirmar-revision` → Descartada y un nuevo Facturar pide el número siguiente al último autorizado (FR-038b); el reintento usa la foto aunque la condición fiscal haya cambiado; la fecha enviada es la del reintento (FakeTimeProvider)
-- [ ] T103 [P] [US7] Write failing tests for the emission state component (Pendiente con Reintentar; Bloqueada con aviso de revisar el punto de venta y botón de confirmación; código y descripción del rechazo) in `frontend/src/facturas/EstadoEmision.test.tsx`
+- [X] T103 [P] [US7] Write failing tests for the emission state component (Pendiente con Reintentar; Bloqueada con aviso de revisar el punto de venta y botón de confirmación; código y descripción del rechazo) in `frontend/src/facturas/EstadoEmision.test.tsx`
 
 ### Implementation for User Story 7
 
