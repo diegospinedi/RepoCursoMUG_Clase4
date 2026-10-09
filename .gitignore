@@ -1,0 +1,37 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+TestResults/
+
+# Frontend
+node_modules/
+frontend/dist/
+backend/Optica.Api/wwwroot/
+coverage/
+*.log
+.env*
+
+# Datos locales (base SQLite con datos personales, WAL, simulador de ARCA, registros)
+*.db
+*.db-wal
+*.db-shm
+arca-simulado.json
+logs/
+
+# Certificados y claves (nunca en el repositorio)
+*.pfx
+*.p12
+*.key
+*.crt
+*.pem
+
+# Editores y sistema
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
