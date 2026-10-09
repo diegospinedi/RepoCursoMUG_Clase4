@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Optica.Api.Acceso;
 using Optica.Api.Arca;
+using Optica.Api.Catalogo;
+using Optica.Api.Configuracion;
 using Optica.Api.Datos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +53,9 @@ builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDef
     .Configure<TimeProvider>((o, reloj) => o.TimeProvider = reloj);
 builder.Services.AddAuthorization(o => o.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
+// Catálogo y configuración.
+builder.Services.AddScoped<ServicioPrecios>();
+
 // ARCA: solo el simulador hasta tener certificado de homologación (AGENTS.md). Nunca producción.
 builder.Services.Configure<OpcionesArca>(builder.Configuration.GetSection("Arca"));
 var entornoArca = builder.Configuration["Arca:Entorno"];
@@ -74,6 +79,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAcceso();
+app.MapConfiguracion();
+app.MapProveedores();
+app.MapArticulos();
 
 // Una ruta /api desconocida no cae en el frontend; sin sesión responde 401 como el resto de la API.
 app.MapFallback("/api/{**resto}", () => Results.NotFound());
