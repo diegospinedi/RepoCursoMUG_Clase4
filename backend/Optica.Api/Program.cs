@@ -1,34 +1,42 @@
+using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Optica.Api.Arca;
+using Optica.Api.Datos;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.TryAddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<PragmasSqlite>();
+builder.Services.AddDbContext<OpticaDbContext>((sp, o) => o
+    .UseSqlite(builder.Configuration.GetConnectionString("Optica"))
+    .AddInterceptors(sp.GetRequiredService<PragmasSqlite>()));
+
+builder.Services.AddProblemDetails();
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+// ARCA: solo el simulador hasta tener certificado de homologación (AGENTS.md). Nunca producción.
+builder.Services.Configure<OpcionesArca>(builder.Configuration.GetSection("Arca"));
+var entornoArca = builder.Configuration["Arca:Entorno"];
+if (entornoArca != "Simulado")
+    throw new InvalidOperationException(
+        $"Arca:Entorno = '{entornoArca}' no está soportado: solo se admite 'Simulado' hasta tener certificado de homologación.");
+builder.Services.AddSingleton<IServicioArca, ArcaSimulado>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+    scope.ServiceProvider.GetRequiredService<OpticaDbContext>().Database.Migrate();
 
-app.UseHttpsRedirection();
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
+// En producción la API sirve el frontend compilado (research R4). Sin ForwardedHeaders: la IP remota
+// decide qué pedidos son locales.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToFile("index.html");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public partial class Program;
