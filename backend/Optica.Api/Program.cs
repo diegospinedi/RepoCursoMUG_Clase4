@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Optica.Api.Acceso;
 using Optica.Api.Arca;
@@ -16,7 +17,8 @@ builder.Services.TryAddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<PragmasSqlite>();
 builder.Services.AddDbContext<OpticaDbContext>((sp, o) => o
     .UseSqlite(builder.Configuration.GetConnectionString("Optica"))
-    .AddInterceptors(sp.GetRequiredService<PragmasSqlite>()));
+    .AddInterceptors(sp.GetRequiredService<PragmasSqlite>())
+    .AddInterceptors(sp.GetServices<IInterceptor>()));
 
 builder.Services.AddProblemDetails();
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -55,6 +57,8 @@ builder.Services.AddAuthorization(o => o.FallbackPolicy = new AuthorizationPolic
 
 // Catálogo y configuración.
 builder.Services.AddScoped<ServicioPrecios>();
+builder.Services.AddScoped<ServicioImportacion>();
+builder.Services.AddSingleton<CandadoImportacion>();
 
 // ARCA: solo el simulador hasta tener certificado de homologación (AGENTS.md). Nunca producción.
 builder.Services.Configure<OpcionesArca>(builder.Configuration.GetSection("Arca"));
@@ -82,6 +86,7 @@ app.MapAcceso();
 app.MapConfiguracion();
 app.MapProveedores();
 app.MapArticulos();
+app.MapImportacion();
 
 // Una ruta /api desconocida no cae en el frontend; sin sesión responde 401 como el resto de la API.
 app.MapFallback("/api/{**resto}", () => Results.NotFound());
