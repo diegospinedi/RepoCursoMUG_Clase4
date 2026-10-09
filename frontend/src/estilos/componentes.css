@@ -164,3 +164,13 @@ a { color: var(--color-primario); }
   padding: var(--espacio-5);
   box-shadow: var(--sombra);
 }
+
+.dialogo-fondo {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--color-texto) 40%, transparent);
+}
+
+.dialogo-fondo .dialogo { background: var(--color-fondo); max-width: 32rem; }
