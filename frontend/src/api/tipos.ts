@@ -26,3 +26,26 @@ export interface Articulo {
   margen: number
   precioVenta: number
 }
+
+export interface FilaInformada {
+  numeroFila: number
+  codigoProveedor: string
+  resultado: 'NoProcesada' | 'ActualizadoPrecioNegativoOCero' | 'CreadoPrecioNegativoOCero'
+  razon: string
+}
+
+export interface ResumenImportacion {
+  id: number
+  creados: number
+  actualizados: number
+  filas: FilaInformada[]
+}
+
+export interface ImportacionHistorial {
+  id: number
+  fecha: string
+  nombreArchivo: string
+  creados: number
+  actualizados: number
+  noProcesados: number
+}

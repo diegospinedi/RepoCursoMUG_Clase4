@@ -177,7 +177,7 @@ planillas con filas nuevas, existentes, inválidas y con formato incorrecto, y v
 - [X] T063 [P] [US3] Implement `LectorPlanilla` (first sheet; exact headers `Código en el proveedor`, `Descripción`, `Precio de Costo`; price only if `DataType == Number`; code via `GetString()` without trimming; ignore fully empty rows; limits 10 MB and 20.000 rows) per research R6 in `backend/Optica.Api/Catalogo/LectorPlanilla.cs`
 - [X] T064 [US3] Implement `ServicioImportacion` (`SemaphoreSlim` for one import at a time; `BEGIN IMMEDIATE` transaction; dictionary of the supplier's articles; per-row rules; recálculo via `ServicioPrecios`; saves `Importacion` and `FilaImportacion`) per research R7–R8 in `backend/Optica.Api/Catalogo/ServicioImportacion.cs`
 - [X] T065 [US3] Implement `POST/GET /api/proveedores/{id}/importaciones` and `GET /api/importaciones/{id}` per `contracts/api-http.md` in `backend/Optica.Api/Catalogo/EndpointsImportacion.cs`
-- [ ] T066 [US3] Implement the import screen with the summary and the history list in `frontend/src/importacion/Importacion.tsx`
+- [X] T066 [US3] Implement the import screen with the summary and the history list in `frontend/src/importacion/Importacion.tsx`
 
 **Checkpoint**: la planilla del proveedor alimenta el catálogo.
 
