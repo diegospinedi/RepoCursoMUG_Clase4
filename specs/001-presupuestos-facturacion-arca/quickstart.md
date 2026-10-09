@@ -73,7 +73,10 @@ respondió 401 en `/api/*` sin sesión.
 | 11 | Modo `SinRespuesta` → 504; con `Normal`, Reintentar consulta, no existe y emite (número 2) |
 | 12 | Búsqueda de facturas por "gonzalez", parte del DNI y del número → la factura correcta |
 
+### 2026-10-09 — Interfaz en el navegador
+
+El responsable del proyecto recorrió la aplicación desde la interfaz y confirmó que funciona (T115).
+
 ### Pendiente
 
-- Recorridos 1–12 desde la interfaz en Chrome y Edge, versión estable y anterior (RNF-03, SC-008).
 - Medición de RNF-01 en pantalla (los tests miden la API).

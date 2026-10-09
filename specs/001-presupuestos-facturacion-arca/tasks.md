@@ -314,7 +314,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 - [X] T112 Configure the production build: Vite `build.outDir` → `backend/Optica.Api/wwwroot` in `frontend/vite.config.ts`, and verify the API serves the SPA with fallback (research R4)
 - [X] T113 [P] Update `AGENTS.md` ("Cómo correr" para producción con el frontend servido por la API; nuevas dependencias ClosedXML, QRCoder y PdfPig)
 - [X] T114 Run the full verification (`dotnet test Optica.slnx`, including traits `Rendimiento`; `cd frontend && npm test && npm run build && npm run lint`) and fix failures
-- [ ] T115 Run the manual walkthroughs 1–12 of `specs/001-presupuestos-facturacion-arca/quickstart.md` in Chrome and Edge (stable and previous, RNF-03, SC-008) and record the results in `specs/001-presupuestos-facturacion-arca/quickstart.md`
+- [X] T115 Run the manual walkthroughs 1–12 of `specs/001-presupuestos-facturacion-arca/quickstart.md` in Chrome and Edge (stable and previous, RNF-03, SC-008) and record the results in `specs/001-presupuestos-facturacion-arca/quickstart.md`
 
 ---
 
