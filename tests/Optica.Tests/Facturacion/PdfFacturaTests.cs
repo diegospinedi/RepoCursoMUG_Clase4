@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Optica.Api.Arca;
 using Optica.Api.Facturacion;
+using Optica.Tests.Catalogo;
 using Optica.Tests.Presupuestos;
 
 namespace Optica.Tests.Facturacion;

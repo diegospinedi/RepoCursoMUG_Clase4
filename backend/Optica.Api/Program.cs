@@ -10,6 +10,7 @@ using Optica.Api.Arca;
 using Optica.Api.Catalogo;
 using Optica.Api.Configuracion;
 using Optica.Api.Datos;
+using Optica.Api.Facturacion;
 using Optica.Api.Presupuestos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +67,11 @@ builder.Services.AddScoped<Numerador>();
 builder.Services.AddScoped<ServicioPresupuestos>();
 builder.Services.AddSingleton<RecursosPdf>();
 
+// Facturación.
+builder.Services.Configure<OpcionesEmisor>(builder.Configuration.GetSection("Emisor"));
+builder.Services.AddSingleton<CandadoEmision>();
+builder.Services.AddScoped<ServicioEmision>();
+
 // ARCA: solo el simulador hasta tener certificado de homologación (AGENTS.md). Nunca producción.
 builder.Services.Configure<OpcionesArca>(builder.Configuration.GetSection("Arca"));
 var entornoArca = builder.Configuration["Arca:Entorno"];
@@ -94,6 +100,7 @@ app.MapProveedores();
 app.MapArticulos();
 app.MapImportacion();
 app.MapPresupuestos();
+app.MapFacturas();
 
 // Una ruta /api desconocida no cae en el frontend; sin sesión responde 401 como el resto de la API.
 app.MapFallback("/api/{**resto}", () => Results.NotFound());
