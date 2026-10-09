@@ -174,3 +174,12 @@ a { color: var(--color-primario); }
 }
 
 .dialogo-fondo .dialogo { background: var(--color-fondo); max-width: 32rem; }
+
+.datos { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: var(--espacio-3); margin: 0; }
+.datos dt { font-size: var(--texto-xs); font-weight: 600; color: var(--color-texto-suave); text-transform: uppercase; }
+.datos dd { margin: 0; }
+
+.total { text-align: right; font-size: var(--texto-lg); font-variant-numeric: tabular-nums; }
+.leyenda { text-align: right; font-size: var(--texto-sm); color: var(--color-texto-suave); }
+.casilla { display: flex; gap: var(--espacio-2); align-items: center; }
+.buscador { margin-bottom: var(--espacio-4); }

@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react'
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router'
+import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router'
 import { pedir } from './api/cliente'
 import { Articulos } from './articulos/Articulos'
 import { CambiarContrasena } from './acceso/CambiarContrasena'
@@ -7,6 +7,7 @@ import { SesionContexto } from './acceso/SesionContexto'
 import { Configuracion } from './configuracion/Configuracion'
 import { Importacion } from './importacion/Importacion'
 import { aplicarMarca, marca } from './marca'
+import { PaginaPresupuesto } from './presupuestos/PaginaPresupuesto'
 import { Proveedores } from './proveedores/Proveedores'
 
 const secciones = [
@@ -50,6 +51,15 @@ export default function App() {
       <main className="contenido">
         <SesionContexto>
           <Routes>
+            <Route path="/presupuestos/:id" element={<PaginaPresupuesto />} />
+            <Route
+              path="/presupuestos"
+              element={
+                <Link className="boton boton-primario" to="/presupuestos/nuevo">
+                  Nuevo presupuesto
+                </Link>
+              }
+            />
             <Route path="/articulos" element={<Articulos />} />
             <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/importacion" element={<Importacion />} />

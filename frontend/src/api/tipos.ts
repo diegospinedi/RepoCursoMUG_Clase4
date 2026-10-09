@@ -49,3 +49,39 @@ export interface ImportacionHistorial {
   actualizados: number
   noProcesados: number
 }
+
+export type EstadoPresupuesto = 'Borrador' | 'Final'
+
+export interface ClientePresupuesto {
+  apellido: string
+  nombre: string
+  dni: string
+  domicilio: string | null
+  email: string | null
+  telefono: string | null
+}
+
+export interface LineaPresupuesto {
+  id: number
+  orden: number
+  articuloCodigo: number
+  descripcion: string
+  precioUnitario: number
+  cantidad: number
+  descuento: number
+  precioConDescuento: number
+  precioFinal: number
+}
+
+export type EstadoEmision = 'Pendiente' | 'Bloqueada' | 'Autorizada' | 'Descartada'
+
+export interface Presupuesto {
+  id: number
+  numero: number
+  fecha: string
+  estado: EstadoPresupuesto
+  cliente: ClientePresupuesto
+  lineas: LineaPresupuesto[]
+  total: number
+  emision?: { facturaId: number; estado: EstadoEmision } | null
+}

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { pedir } from '../api/cliente'
 import type { Articulo } from '../api/tipos'
 import { formatearImporte } from '../calculos/lineas'
@@ -9,22 +9,38 @@ export function BuscadorArticulos({ alElegir }: { alElegir: (articulo: Articulo)
   const [texto, setTexto] = useState('')
   const [resultados, setResultados] = useState<Articulo[]>()
 
-  async function buscar(e: FormEvent) {
-    e.preventDefault()
+  function elegir(a: Articulo) {
+    alElegir(a)
+    setResultados(undefined)
+    setTexto('')
+  }
+
+  // Sin <form>: el buscador vive dentro del formulario del presupuesto y no tiene que enviarlo.
+  async function buscar() {
     setResultados(await pedir<Articulo[]>(`/api/articulos?texto=${encodeURIComponent(texto)}`))
   }
 
   return (
     <div className="buscador">
-      <form className="fila" onSubmit={buscar}>
+      <div className="fila">
         <div className="campo">
           <label htmlFor="buscar-linea">Buscar artículo por código o descripción</label>
-          <input id="buscar-linea" value={texto} onChange={(e) => setTexto(e.target.value)} />
+          <input
+            id="buscar-linea"
+            value={texto}
+            onChange={(e) => setTexto(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                void buscar()
+              }
+            }}
+          />
         </div>
-        <button className="boton" type="submit">
+        <button className="boton" type="button" onClick={() => void buscar()}>
           Buscar artículo
         </button>
-      </form>
+      </div>
       {resultados?.length === 0 && <p className="aviso aviso-info">No se encontraron artículos.</p>}
       {resultados && resultados.length > 0 && (
         <table className="grilla">
@@ -45,7 +61,7 @@ export function BuscadorArticulos({ alElegir }: { alElegir: (articulo: Articulo)
                 <td>{a.descripcion}</td>
                 <td className="numero">{formatearImporte(aCentavos(a.precioVenta))}</td>
                 <td>
-                  <button className="boton" type="button" aria-label={`Agregar ${a.descripcion}`} onClick={() => alElegir(a)}>
+                  <button className="boton" type="button" aria-label={`Agregar ${a.descripcion}`} onClick={() => elegir(a)}>
                     Agregar
                   </button>
                 </td>
