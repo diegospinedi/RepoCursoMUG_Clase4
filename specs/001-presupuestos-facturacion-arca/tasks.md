@@ -44,8 +44,8 @@ juntas, después de pasar `dotnet test Optica.slnx` y, en `frontend/`, `npm test
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create the solution `Optica.slnx` with an ASP.NET Core Web API project `backend/Optica.Api/Optica.Api.csproj` (net10.0, nullable enabled, warnings as errors) and an xUnit project `tests/Optica.Tests/Optica.Tests.csproj` that references it
-- [ ] T002 Add NuGet packages to `backend/Optica.Api/Optica.Api.csproj`: Microsoft.EntityFrameworkCore.Sqlite, Microsoft.EntityFrameworkCore.Design, ClosedXML, QuestPDF, QRCoder; and to `tests/Optica.Tests/Optica.Tests.csproj`: Microsoft.AspNetCore.Mvc.Testing, Microsoft.Extensions.TimeProvider.Testing, UglyToad.PdfPig (to read PDF text in tests)
+- [X] T001 Create the solution `Optica.slnx` with an ASP.NET Core Web API project `backend/Optica.Api/Optica.Api.csproj` (net10.0, nullable enabled, warnings as errors) and an xUnit project `tests/Optica.Tests/Optica.Tests.csproj` that references it
+- [X] T002 Add NuGet packages to `backend/Optica.Api/Optica.Api.csproj`: Microsoft.EntityFrameworkCore.Sqlite, Microsoft.EntityFrameworkCore.Design, ClosedXML, QuestPDF, QRCoder; and to `tests/Optica.Tests/Optica.Tests.csproj`: Microsoft.AspNetCore.Mvc.Testing, Microsoft.Extensions.TimeProvider.Testing, UglyToad.PdfPig (to read PDF text in tests)
 - [X] T003 [P] Create the local tool manifest `.config/dotnet-tools.json` with `dotnet-ef` 10.x
 - [X] T004 [P] Create `.gitignore` at the repo root excluding `bin/`, `obj/`, `node_modules/`, `frontend/dist/`, `backend/Optica.Api/wwwroot/`, `*.db`, `*.db-wal`, `*.db-shm`, `arca-simulado.json`, `*.pfx`, `*.p12`, `*.key`, `*.crt`, `logs/` (research R14)
 - [ ] T005 [P] Scaffold `frontend/` with Vite + React 19 + TypeScript (`frontend/package.json`, `frontend/tsconfig.json`, `frontend/vite.config.ts` with proxy `/api` → `http://localhost:5220` and `test.environment = "jsdom"`, `frontend/eslint.config.js`); scripts `dev`, `build`, `test` (vitest run), `lint`
