@@ -128,3 +128,16 @@ export interface FacturaDetalle {
   dni: string
   lineas: { descripcion: string; cantidad: number; precioFinal: number }[]
 }
+
+export interface FacturaResumen {
+  id: number
+  estado: EstadoEmision
+  tipo: 'B' | 'C'
+  puntoVenta: number
+  numero: number
+  fecha: string
+  apellido: string
+  nombre: string
+  total: number
+  presupuestoNumero: number
+}

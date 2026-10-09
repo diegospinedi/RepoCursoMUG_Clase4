@@ -5,6 +5,7 @@ import { Articulos } from './articulos/Articulos'
 import { CambiarContrasena } from './acceso/CambiarContrasena'
 import { SesionContexto } from './acceso/SesionContexto'
 import { Configuracion } from './configuracion/Configuracion'
+import { ListadoFacturas } from './facturas/ListadoFacturas'
 import { PaginaFactura } from './facturas/PaginaFactura'
 import { Importacion } from './importacion/Importacion'
 import { aplicarMarca, marca } from './marca'
@@ -55,6 +56,7 @@ export default function App() {
           <Routes>
             <Route path="/presupuestos/:id" element={<PaginaPresupuesto />} />
             <Route path="/presupuestos" element={<BuscarPresupuestos />} />
+            <Route path="/facturas" element={<ListadoFacturas />} />
             <Route path="/facturas/:id" element={<PaginaFactura />} />
             <Route path="/articulos" element={<Articulos />} />
             <Route path="/configuracion" element={<Configuracion />} />
