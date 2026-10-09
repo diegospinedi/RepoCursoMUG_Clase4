@@ -12,7 +12,7 @@ public static class EndpointsArticulos
         decimal PrecioCosto, decimal Margen, decimal PrecioVenta);
 
     /// <summary>El precio de venta no se recibe: es de solo lectura (FR-014).</summary>
-    public sealed record PedidoArticulo(int ProveedorId, string? CodigoProveedor, string? Descripcion, decimal PrecioCosto, decimal Margen);
+    public sealed record PedidoArticulo(int ProveedorId, string? CodigoProveedor, string? Descripcion, decimal? PrecioCosto, decimal? Margen);
 
     public static void MapArticulos(this WebApplication app)
     {
@@ -47,8 +47,9 @@ public static class EndpointsArticulos
             var errores = await ValidarAsync(p, db, null);
             if (errores.Hay) return errores.Respuesta();
             var multiplo = (await precios.ParametrosAsync()).MultiploRedondeo;
-            var a = Articulo.Nuevo(p.ProveedorId, p.CodigoProveedor!, p.Descripcion!.Trim(), p.PrecioCosto, p.Margen,
-                ServicioPrecios.Calcular(p.PrecioCosto, p.Margen, multiplo));
+            var (costo, margen) = (p.PrecioCosto!.Value, p.Margen!.Value);
+            var a = Articulo.Nuevo(p.ProveedorId, p.CodigoProveedor!, p.Descripcion!.Trim(), costo, margen,
+                ServicioPrecios.Calcular(costo, margen, multiplo));
             db.Add(a);
             await db.SaveChangesAsync();
             await db.Entry(a).Reference(x => x.Proveedor).LoadAsync();
@@ -65,9 +66,9 @@ public static class EndpointsArticulos
             a.ProveedorId = p.ProveedorId;
             a.CodigoProveedor = p.CodigoProveedor!;
             a.Describir(p.Descripcion!.Trim());
-            a.PrecioCosto = p.PrecioCosto;
-            a.Margen = p.Margen;
-            a.PrecioVenta = ServicioPrecios.Calcular(p.PrecioCosto, p.Margen, multiplo);
+            a.PrecioCosto = p.PrecioCosto!.Value;
+            a.Margen = p.Margen!.Value;
+            a.PrecioVenta = ServicioPrecios.Calcular(a.PrecioCosto, a.Margen, multiplo);
             await db.SaveChangesAsync();
             await db.Entry(a).Reference(x => x.Proveedor).LoadAsync();
             return Results.Ok(Dto(a));
@@ -93,9 +94,11 @@ public static class EndpointsArticulos
         if (descripcion.Length == 0) e.Agregar("descripcion", "Ingresá la descripción.");
         else if (descripcion.Length > Articulo.LargoDescripcion) e.Agregar("descripcion", "La descripción puede tener como máximo 200 caracteres.");
 
-        if (e.DosDecimales("precioCosto", p.PrecioCosto) && p.PrecioCosto < 0)
+        if (p.PrecioCosto is null) e.Agregar("precioCosto", "Ingresá el precio de costo.");
+        else if (e.DosDecimales("precioCosto", p.PrecioCosto) && p.PrecioCosto < 0)
             e.Agregar("precioCosto", "El precio de costo no puede ser negativo.");
-        if (e.DosDecimales("margen", p.Margen) && (p.Margen < 0 || p.Margen > 1000))
+        if (p.Margen is null) e.Agregar("margen", "Ingresá el margen de utilidad.");
+        else if (e.DosDecimales("margen", p.Margen) && (p.Margen < 0 || p.Margen > 1000))
             e.Agregar("margen", "El margen debe estar entre 0 y 1000.");
         return e;
     }

@@ -1,6 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router'
 import { pedir } from './api/cliente'
+import { Articulos } from './articulos/Articulos'
 import { CambiarContrasena } from './acceso/CambiarContrasena'
 import { SesionContexto } from './acceso/SesionContexto'
 import { Configuracion } from './configuracion/Configuracion'
@@ -48,6 +49,7 @@ export default function App() {
       <main className="contenido">
         <SesionContexto>
           <Routes>
+            <Route path="/articulos" element={<Articulos />} />
             <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/proveedores" element={<Proveedores />} />
             <Route path="/contrasena" element={<CambiarContrasena />} />

@@ -109,6 +109,17 @@ public class ArticulosTests
     }
 
     [Fact]
+    public async Task Pide_costo_y_margen_si_vienen_vacios()
+    {
+        var (app, cliente, p) = await PrepararAsync();
+        await using var _ = app;
+        var errores = await ErroresAsync(await cliente.PostAsJsonAsync("/api/articulos",
+            new { proveedorId = p.Id, codigoProveedor = "ABC-1", descripcion = "X", precioCosto = (decimal?)null, margen = (decimal?)null }));
+        Assert.Equal("Ingresá el precio de costo.", errores["precioCosto"][0]);
+        Assert.Equal("Ingresá el margen de utilidad.", errores["margen"][0]);
+    }
+
+    [Fact]
     public async Task El_codigo_es_unico_por_proveedor_y_distingue_mayusculas()
     {
         var (app, cliente, p) = await PrepararAsync();
