@@ -100,7 +100,7 @@ FR-024). La respuesta devuelve las líneas con los importes calculados por el se
 | `POST /api/presupuestos/{id}/factura` | — | `201 { facturaId, estado: "Autorizada", tipo, puntoVenta, numero, cae, vencimientoCae }`; `409 presupuesto-borrador`; `409 ya-facturado`; `502 { type: "arca-rechazo", codigo, descripcion }` (no registra nada, FR-034); `504 { type: "arca-sin-respuesta", facturaId }` (queda Pendiente, FR-035) |
 | `POST /api/facturas/{id}/reintentar` | — | `200` Autorizada (recuperada o emitida); `409 { type: "emision-bloqueada" }` si aparece otro total; `502` o `504` como arriba; `409` si no está Pendiente |
 | `POST /api/facturas/{id}/confirmar-revision` | — | `200 { estado: "Descartada" }`; `409` si no está Bloqueada (FR-038b) |
-| `GET /api/facturas?estado=&apellido=&nombre=&dni=&numero=&desde=&hasta=` | — | `200 [{ id, estado, tipo, puntoVenta, numero, fecha, apellido, nombre, total, presupuestoNumero }]` (FR-039) |
+| `GET /api/facturas?estado=&apellido=&nombre=&dni=&numero=&desde=&hasta=` | — | `200 [{ id, estado, tipo, puntoVenta, numero, fecha, apellido, nombre, total, presupuestoNumero }]`; sin `estado` devuelve todos los estados, Descartadas incluidas (FR-039) |
 | `GET /api/facturas/{id}` | — | `200` detalle con presupuesto de origen |
 | `GET /api/facturas/{id}/pdf` | — | `200 application/pdf`; `409` si no está Autorizada |
 

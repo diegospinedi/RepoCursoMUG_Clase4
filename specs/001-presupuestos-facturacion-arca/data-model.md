@@ -68,8 +68,9 @@ Siempre activo: no hay baja ni desactivación.
 
 **FilaImportacion** (solo filas no procesadas o con precio negativo o cero): ImportacionId, NumeroFila
 (número de fila de la planilla), CodigoProveedor (texto tal cual, puede estar vacío), Resultado
-(`NoProcesada` o `PrecioNegativoOCero`) y Razon ("precio inválido", "falta la descripción", "falta el
-código", "código repetido en la planilla" o "actualizado con precio negativo o cero").
+(`NoProcesada`, `ActualizadoPrecioNegativoOCero` o `CreadoPrecioNegativoOCero`) y Razon ("precio
+inválido", "falta la descripción", "falta el código", "código repetido en la planilla", "actualizado con
+precio negativo o cero" o "creado con precio negativo o cero").
 
 Una planilla rechazada por formato o por límites no genera `Importacion` (no cambia nada).
 
@@ -103,7 +104,7 @@ presupuestos.
 | Orden | entero | posición en la grilla |
 | ArticuloCodigo | entero | código del artículo seleccionado |
 | Descripcion | texto | copiada del catálogo en líneas nuevas; conservada en las existentes (FR-024) |
-| PrecioUnitario | importe | copiado del precio de venta en líneas nuevas; ≥ 0 (FR-023); no editable |
+| PrecioUnitario | importe | copiado del precio de venta en líneas nuevas; ≥ 0, se admite 0 (FR-023); no editable |
 | Cantidad | entero | 1 a 9.999 (FR-020, CHK034) |
 | Descuento | porcentaje | 0 a 100, hasta 2 decimales |
 | PrecioConDescuento | importe | round(PrecioUnitario × (1 − Descuento/100), 2) |

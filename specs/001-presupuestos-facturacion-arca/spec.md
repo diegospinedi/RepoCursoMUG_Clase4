@@ -48,6 +48,14 @@ RF-24 y cambia el formato de RF-23 (agrega la columna Descripción).
   "Emisión pendiente" con Reintentar y el listado de facturas incluye las pendientes, filtrables por
   estado. En el caso de otro total, la emisión queda bloqueada hasta que la operadora confirme que revisó
   el punto de venta en ARCA; recién entonces se descarta y el presupuesto vuelve a poder facturarse.
+- Q: ¿Cuánto puede tardar, como máximo, recalcular un catálogo de 10.000 artículos al cambiar el múltiplo
+  de redondeo? → A: menos de 30 segundos.
+- Q: ¿Las emisiones Descartadas aparecen en el listado de facturas? → A: siempre, junto a las demás y con
+  su estado.
+- Q: ¿Se puede cargar en un presupuesto un artículo con precio de venta $0? → A: sí; solo se rechazan
+  precios negativos.
+- Q: ¿Qué leyenda lleva un artículo nuevo creado por la importación con precio negativo o cero? → A:
+  "creado con precio negativo o cero".
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -158,7 +166,8 @@ inválidas y con formato incorrecto, y verificar el catálogo resultante y el re
    importo, **Then** no se crea ni actualiza ningún artículo y se informa que el formato no es el esperado
    (AC-76).
 7. **Given** una planilla con filas de precio -100 y 0, **When** la importo, **Then** se procesan y se
-   listan con la indicación "actualizado con precio negativo o cero" (AC-90).
+   listan con la indicación "actualizado con precio negativo o cero" (AC-90); si son códigos nuevos, con
+   "creado con precio negativo o cero".
 8. **Given** una planilla con el mismo código en dos filas, **When** la importo, **Then** ninguna de esas
    filas se procesa y se listan con la razón "código repetido en la planilla".
 9. **Given** un catálogo de 10.000 artículos y una planilla de 10.000 filas, **When** la importo, **Then**
@@ -331,8 +340,9 @@ presupuesto de origen de cada una.
 
 ### Edge Cases
 
-- Artículo con precio de venta negativo o cero (por ejemplo, por un costo mal cargado): no puede usarse
-  en una línea con precio negativo; se informa "El precio unitario no puede ser negativo" (RF-17, AC-12).
+- Artículo con precio de venta negativo (por ejemplo, por un costo mal cargado): no puede usarse en una
+  línea; se informa "El precio unitario no puede ser negativo" (RF-17, AC-12). Un artículo con precio de
+  venta $0 sí se puede usar.
 - Planilla vacía (solo encabezados): no cambia nada y el resumen lo informa.
 - Error inesperado a mitad de la importación: no se aplica ningún cambio de esa planilla, para no dejar
   el catálogo a medio actualizar.
@@ -406,7 +416,8 @@ presupuesto de origen de cada una.
 
 - **FR-042**: El sistema MUST permitir importar una planilla Excel para un proveedor elegido por la
   operadora, con tres columnas en este orden y con estos encabezados: Código en el proveedor, Descripción
-  y Precio de Costo (precio final del proveedor, con IVA) (RF-22, RF-23, enmendado).
+  y Precio de Costo (precio final del proveedor, con IVA) (RF-22, RF-23, enmendado). La planilla MUST
+  tener como máximo 10 MB y 20.000 filas de datos; si los supera, se rechaza completa como en FR-043.
 - **FR-043**: El sistema MUST rechazar completa, sin cambiar ningún artículo, una planilla con columnas
   faltantes, columnas de más o encabezados distintos, e informar que el formato no es el esperado (RF-78,
   RF-79).
@@ -422,11 +433,13 @@ presupuesto de origen de cada una.
   proveedor MUST tomarse tal como está en la celda y compararse exactamente, sin recortar espacios: "ABC-1"
   y "ABC-1 " son códigos distintos. Una celda de código numérica se toma por su valor ("00123" con formato
   de número se lee 123).
-- **FR-046**: El sistema MUST NOT procesar una fila con precio inválido según FR-045a, una fila nueva sin
-  descripción ("falta la descripción") ni las filas cuyo código aparezca más de una vez en la planilla
-  ("código repetido en la planilla") (RF-80).
+- **FR-046**: El sistema MUST NOT procesar una fila con precio inválido según FR-045a, una fila con datos
+  pero sin código ("falta el código"), una fila nueva sin descripción ("falta la descripción") ni las
+  filas cuyo código aparezca más de una vez en la planilla ("código repetido en la planilla") (RF-80). Las
+  filas completamente vacías se ignoran sin informarlas.
 - **FR-047**: El sistema MUST aceptar precios negativos o cero y listar esas filas con la indicación
-  "actualizado con precio negativo o cero" (RF-80, RF-93).
+  "actualizado con precio negativo o cero" o, si la fila creó el artículo, "creado con precio negativo o
+  cero" (RF-80, RF-93).
 - **FR-048**: Al terminar, el sistema MUST mostrar un resumen con la cantidad de artículos creados y
   actualizados y la lista de filas no procesadas con su número de fila, código y razón (RF-24).
 - **FR-049**: Los artículos del proveedor que no figuren en la planilla MUST quedar sin cambios, y los de
@@ -438,7 +451,8 @@ presupuesto de origen de cada una.
 
 - **FR-016**: El sistema MUST grabar presupuestos con los datos del cliente (Apellido, Nombre, DNI
   obligatorios; Domicilio, Email y Teléfono opcionales) guardados dentro del presupuesto (RF-05, RF-38,
-  RF-61, RF-74).
+  RF-61, RF-74). El DNI MUST tener 7 u 8 dígitos; se admiten puntos al cargarlo y se guarda solo con
+  dígitos.
 - **FR-017**: El sistema MUST numerar cada presupuesto al grabarlo por primera vez, empezando por 1, con el
   último número + 1, sin repetir números con grabaciones simultáneas (RF-06, RNF-13).
 - **FR-018**: El sistema MUST manejar los estados Borrador y Final; solo se modifica en Borrador, y un
@@ -446,14 +460,16 @@ presupuesto de origen de cada una.
 - **FR-019**: El sistema MUST permitir buscar artículos por código o descripción y, al seleccionar uno,
   completar código, descripción y precio unitario con el precio de venta guardado. El precio unitario de
   la línea no es editable: para bajarlo se usa el descuento (RF-11, RF-39, RF-68, RF-73).
-- **FR-020**: Cada línea MUST registrar código, descripción, precio unitario, cantidad (entera, mayor a 0),
-  porcentaje de descuento (0 a 100), precio con descuento y precio final (RF-12, RF-16, RF-59, RF-60).
+- **FR-020**: Cada línea MUST registrar código, descripción, precio unitario, cantidad (entera, de 1 a
+  9.999), porcentaje de descuento (0 a 100), precio con descuento y precio final (RF-12, RF-16, RF-59,
+  RF-60).
 - **FR-021**: El sistema MUST calcular precio con descuento = precio unitario × (1 − descuento / 100)
   redondeado a 2 decimales (mitad hacia arriba); precio final = precio con descuento redondeado ×
   cantidad, redondeado; total = suma de precios finales redondeados (RF-13, RF-14, RF-15, RF-19, RF-44).
 - **FR-022**: Los importes en pantalla y en el PDF del presupuesto MUST expresarse con IVA incluido y sin
   discriminar IVA (RF-18, RF-42).
-- **FR-023**: El sistema MUST rechazar una línea cuyo precio unitario sea negativo (RF-17).
+- **FR-023**: El sistema MUST rechazar una línea cuyo precio unitario sea negativo; un precio unitario de
+  $0 se admite (RF-17).
 - **FR-024**: Una línea ya grabada MUST conservar su descripción y precio unitario aunque el artículo
   cambie en el catálogo (RF-87).
 
@@ -510,8 +526,8 @@ presupuesto de origen de cada una.
 
 **Consulta de facturas e interfaz**
 
-- **FR-039**: El sistema MUST listar facturas, incluidas las emisiones Pendientes y Bloqueadas con su
-  estado, y buscarlas por estado, rango de fechas, número de comprobante y datos del cliente, con los
+- **FR-039**: El sistema MUST listar facturas en todos sus estados (Autorizadas, Pendientes, Bloqueadas y
+  Descartadas), mostrando el estado de cada una, y buscarlas por estado, rango de fechas, número de comprobante y datos del cliente, con los
   mismos criterios de FR-026 (RF-33, RF-54, RF-81, RF-82, RF-83, RF-88).
 - **FR-040**: El sistema MUST mostrar el logo y la paleta de colores de la óptica (primario #0903A0 sobre
   #FFFFFF) en todas las pantallas y PDF (RF-34, RF-55).
@@ -557,12 +573,12 @@ presupuesto de origen de cada una.
   dato del cliente ni de los artículos.
 - **SC-008**: Todos los escenarios de aceptación pasan en Chrome y Edge, versión estable vigente y la
   inmediata anterior (RNF-03).
+- **SC-009**: Un catálogo de 10.000 artículos se recalcula completo en menos de 30 segundos tras un
+  cambio del múltiplo de redondeo, sin que la operadora deba editar ningún artículo.
 - **SC-010**: Una planilla de proveedor de hasta 10.000 filas se importa en menos de 120 segundos, y la
   operadora no carga a mano ningún artículo que venga en la planilla (RNF-12).
 - **SC-011**: El 100 % de las filas no procesadas aparece en el resumen con su razón: ninguna fila se
   pierde sin aviso.
-- **SC-009**: Un catálogo de 10.000 artículos se recalcula completo tras un cambio del múltiplo de redondeo
-  sin que la operadora deba editar ningún artículo.
 
 ## Assumptions
 

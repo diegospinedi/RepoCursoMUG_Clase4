@@ -28,7 +28,8 @@ mismo pasa si se superan los límites.
 | Código nuevo sin descripción | no procesada | "falta la descripción" |
 | Código existente, precio válido | actualiza costo y precio de venta | — |
 | Código nuevo, precio y descripción válidos | crea el artículo con el margen predeterminado | — |
-| Precio negativo o cero (en una fila procesada) | procesada y listada | "actualizado con precio negativo o cero" |
+| Precio negativo o cero en un código existente | actualizada y listada | "actualizado con precio negativo o cero" |
+| Precio negativo o cero en un código nuevo | creada y listada | "creado con precio negativo o cero" |
 
 Los artículos del proveedor que no figuran en la planilla no cambian. La importación es todo o nada
 (FR-050) y requiere el margen predeterminado configurado (FR-045).
