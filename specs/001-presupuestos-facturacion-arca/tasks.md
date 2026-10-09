@@ -296,7 +296,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 
 ### Tests for User Story 8 (write first, must fail)
 
-- [ ] T107 [P] [US8] Write failing tests in `tests/Optica.Tests/Facturacion/BusquedaFacturasTests.cs`: "gonzalez" con Desde 15/03/2026 → solo la de González del 20/03 (AC-22); número "34561" → 0003-00034561 (AC-88); DNI "3456" → las del cliente 23.456.789 (AC-87); sin filtro de estado el listado incluye Autorizadas, Pendientes, Bloqueadas y Descartadas con su estado (FR-039); el filtro por estado devuelve solo ese estado; cada fila incluye el número del presupuesto de origen
+- [X] T107 [P] [US8] Write failing tests in `tests/Optica.Tests/Facturacion/BusquedaFacturasTests.cs`: "gonzalez" con Desde 15/03/2026 → solo la de González del 20/03 (AC-22); número "34561" → 0003-00034561 (AC-88); DNI "3456" → las del cliente 23.456.789 (AC-87); sin filtro de estado el listado incluye Autorizadas, Pendientes, Bloqueadas y Descartadas con su estado (FR-039); el filtro por estado devuelve solo ese estado; cada fila incluye el número del presupuesto de origen
 - [ ] T108 [P] [US8] Write failing tests for the invoice list screen (filtros, estado visible, acceso al detalle) in `frontend/src/facturas/ListadoFacturas.test.tsx`
 
 ### Implementation for User Story 8
