@@ -85,7 +85,7 @@ juntas, después de pasar `dotnet test Optica.slnx` y, en `frontend/`, `npm test
 - [X] T025 [P] Implement the centavos line calculator (precio con descuento, precio final, total; no `Math.round` sobre importes en `number`) in `frontend/src/calculos/lineas.ts`
 - [X] T026 [P] Implement the typed API client in `frontend/src/api/cliente.ts`
 - [X] T027 [P] Create `frontend/src/marca.ts` (reads `Marca/branding.json`), `frontend/src/estilos/tokens.css` and `frontend/src/estilos/componentes.css` following the `frontend-design` skill (colors only from branding, tokens only)
-- [ ] T028 [P] Create `CampoConError` (label, input, mensaje de error junto al campo por clave, FR-041) in `frontend/src/comunes/CampoConError.tsx`; write the failing test `frontend/src/comunes/CampoConError.test.tsx` first
+- [X] T028 [P] Create `CampoConError` (label, input, mensaje de error junto al campo por clave, FR-041) in `frontend/src/comunes/CampoConError.tsx`; write the failing test `frontend/src/comunes/CampoConError.test.tsx` first
 - [ ] T029 Create the app shell (logo from `marca.ts`, navegación, rutas vacías por pantalla, fonts imported from @fontsource) in `frontend/src/App.tsx` and `frontend/src/main.tsx`
 
 **Checkpoint**: vectores en verde en backend y frontend; host de prueba y ARCA simulado listos.
