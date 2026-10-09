@@ -3,6 +3,7 @@ import { BrowserRouter, NavLink, Route, Routes } from 'react-router'
 import { pedir } from './api/cliente'
 import { CambiarContrasena } from './acceso/CambiarContrasena'
 import { SesionContexto } from './acceso/SesionContexto'
+import { Configuracion } from './configuracion/Configuracion'
 import { aplicarMarca, marca } from './marca'
 
 const secciones = [
@@ -46,6 +47,7 @@ export default function App() {
       <main className="contenido">
         <SesionContexto>
           <Routes>
+            <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/contrasena" element={<CambiarContrasena />} />
             <Route path="*" element={<h1>Óptica Sistema</h1>} />
           </Routes>
