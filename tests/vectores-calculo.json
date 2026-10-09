@@ -1,0 +1,33 @@
+{
+  "descripcion": "Casos compartidos por los tests de backend (xUnit) y frontend (Vitest). Importes en pesos con 2 decimales; porcentajes como número (21 = 21 %). Fuente: ejemplos numéricos del PRD y de la spec 001.",
+  "precioVenta": [
+    { "caso": "AC-13", "costo": "1000", "margen": "50", "multiplo": "0.01", "esperado": "1500.00" },
+    { "caso": "AC-36 / AC-83", "costo": "1210", "margen": "50", "multiplo": "0.01", "esperado": "1815.00" },
+    { "caso": "AC-38: calculado 1815,37 con múltiplo 50", "costo": "1210.2466666666666666666666667", "margen": "50", "multiplo": "50", "esperado": "1850.00" },
+    { "caso": "AC-39: calculado 1666,656 con múltiplo 0,01", "costo": "1111.104", "margen": "50", "multiplo": "0.01", "esperado": "1666.66" },
+    { "caso": "AC-70", "costo": "1210", "margen": "60", "multiplo": "0.01", "esperado": "1936.00" },
+    { "caso": "AC-71 / AC-14", "costo": "2420", "margen": "50", "multiplo": "0.01", "esperado": "3630.00" },
+    { "caso": "AC-72", "costo": "1105", "margen": "50", "multiplo": "0.01", "esperado": "1657.50" },
+    { "caso": "AC-85 / AC-74", "costo": "1210", "margen": "50", "multiplo": "50", "esperado": "1850.00" },
+    { "caso": "FR-013: negativo hacia el valor mayor", "costo": "-1210.25", "margen": "50", "multiplo": "50", "esperado": "-1800.00" },
+    { "caso": "redondeo hacia arriba aun con residuo mínimo", "costo": "1000.001", "margen": "0", "multiplo": "0.01", "esperado": "1000.01" },
+    { "caso": "costo 2 sin centavo de más (AGENTS.md)", "costo": "2", "margen": "50", "multiplo": "0.01", "esperado": "3.00" }
+  ],
+  "lineas": [
+    { "caso": "AC-26", "precioUnitario": "1000", "descuento": "0", "cantidad": 1, "precioConDescuento": "1000.00", "precioFinal": "1000.00" },
+    { "caso": "AC-35", "precioUnitario": "1000", "descuento": "10", "cantidad": 1, "precioConDescuento": "900.00", "precioFinal": "900.00" },
+    { "caso": "AC-27", "precioUnitario": "900", "descuento": "0", "cantidad": 3, "precioConDescuento": "900.00", "precioFinal": "2700.00" },
+    { "caso": "AC-29: 3,335 sin redondear", "precioUnitario": "6.67", "descuento": "50", "cantidad": 3, "precioConDescuento": "3.34", "precioFinal": "10.02" },
+    { "caso": "AGENTS.md: 2,01 con 50 %", "precioUnitario": "2.01", "descuento": "50", "cantidad": 1, "precioConDescuento": "1.01", "precioFinal": "1.01" },
+    { "caso": "precio 0 admitido (FR-023)", "precioUnitario": "0", "descuento": "0", "cantidad": 2, "precioConDescuento": "0.00", "precioFinal": "0.00" }
+  ],
+  "totales": [
+    { "caso": "AC-11", "preciosFinales": ["10.02", "2700.00"], "esperado": "2710.02" }
+  ],
+  "desgloseFacturaB": [
+    { "caso": "FR-028 / US6", "total": "1815.00", "alicuota": "21", "neto": "1500.00", "iva": "315.00" },
+    { "caso": "FR-028 / US6", "total": "1000.00", "alicuota": "21", "neto": "826.45", "iva": "173.55" },
+    { "caso": "IVA 10,5", "total": "1657.50", "alicuota": "10.5", "neto": "1500.00", "iva": "157.50" },
+    { "caso": "IVA 0", "total": "500.00", "alicuota": "0", "neto": "500.00", "iva": "0.00" }
+  ]
+}
