@@ -85,7 +85,7 @@ juntas, después de pasar `dotnet test Optica.slnx` y, en `frontend/`, `npm test
 - [ ] T025 [P] Implement the centavos line calculator (precio con descuento, precio final, total; no `Math.round` sobre importes en `number`) in `frontend/src/calculos/lineas.ts`
 - [ ] T026 [P] Implement the typed API client in `frontend/src/api/cliente.ts`
 - [ ] T027 [P] Create `frontend/src/marca.ts` (reads `Marca/branding.json`), `frontend/src/estilos/tokens.css` and `frontend/src/estilos/componentes.css` following the `frontend-design` skill (colors only from branding, tokens only)
-- [ ] T028 [P] Create `CampoConError` (label, input, mensaje de error junto al campo por clave, FR-041) in `frontend/src/comunes/CampoConError.tsx` with its test `frontend/src/comunes/CampoConError.test.tsx`
+- [ ] T028 [P] Create `CampoConError` (label, input, mensaje de error junto al campo por clave, FR-041) in `frontend/src/comunes/CampoConError.tsx`; write the failing test `frontend/src/comunes/CampoConError.test.tsx` first
 - [ ] T029 Create the app shell (logo from `marca.ts`, navegación, rutas vacías por pantalla, fonts imported from @fontsource) in `frontend/src/App.tsx` and `frontend/src/main.tsx`
 
 **Checkpoint**: vectores en verde en backend y frontend; host de prueba y ARCA simulado listos.
@@ -116,7 +116,7 @@ la inactividad con reloj falso, y comprobar que sin sesión todo endpoint respon
 - [ ] T038 [US1] Configure cookie authentication in `backend/Optica.Api/Program.cs` (`HttpOnly`, `SameSite=Strict`, sliding expiration 60 minutes using the registered `TimeProvider` via `CookieAuthenticationOptions.TimeProvider` so `FakeTimeProvider` controls the expiry, 401 instead of redirect, `OnValidatePrincipal` compares `SelloSeguridad`, fallback policy requiring an authenticated user for `/api/*`; `/api/acceso/*` and the SPA fallback are anonymous)
 - [ ] T039 [US1] Implement the endpoints `estado`, `definir`, `ingresar`, `salir`, `cambiar`, `restablecer` per `contracts/api-http.md` in `backend/Optica.Api/Acceso/EndpointsAcceso.cs` and complete `IngresarAsync()` in `tests/Optica.Tests/AppDePrueba.cs`
 - [ ] T040 [P] [US1] Implement `Ingreso.tsx`, `DefinirContrasena.tsx`, `CambiarContrasena.tsx` and `RestablecerContrasena.tsx` in `frontend/src/acceso/`
-- [ ] T041 [US1] Implement `SesionContexto.tsx` (route guard by `/api/acceso/estado`; on 401 opens the login dialog and keeps the open form in memory, nothing in browser storage, research R5) in `frontend/src/acceso/SesionContexto.tsx` with its test `frontend/src/acceso/SesionContexto.test.tsx`
+- [ ] T041 [US1] Implement `SesionContexto.tsx` (route guard by `/api/acceso/estado`; on 401 opens the login dialog and keeps the open form in memory, nothing in browser storage, research R5) in `frontend/src/acceso/SesionContexto.tsx`; write the failing test `frontend/src/acceso/SesionContexto.test.tsx` first
 
 **Checkpoint**: US1 funciona sola; el resto de las historias usa `IngresarAsync()` en sus tests.
 
@@ -149,7 +149,7 @@ ejemplos numéricos del PRD.
 - [ ] T053 [P] [US2] Implement `GET/POST/PUT /api/proveedores` in `backend/Optica.Api/Catalogo/EndpointsProveedores.cs`
 - [ ] T054 [US2] Implement `GET/POST/PUT /api/articulos` per `contracts/api-http.md` in `backend/Optica.Api/Catalogo/EndpointsArticulos.cs`
 - [ ] T055 [P] [US2] Implement the Configuración screen in `frontend/src/configuracion/Configuracion.tsx`
-- [ ] T056 [P] [US2] Implement the Proveedores screen in `frontend/src/proveedores/Proveedores.tsx` with its test `frontend/src/proveedores/Proveedores.test.tsx`
+- [ ] T056 [P] [US2] Implement the Proveedores screen in `frontend/src/proveedores/Proveedores.tsx`; write the failing test `frontend/src/proveedores/Proveedores.test.tsx` first
 - [ ] T057 [US2] Implement the article list with search and the editor (precio de venta de solo lectura) in `frontend/src/articulos/Articulos.tsx` and `frontend/src/articulos/EditorArticulo.tsx`
 
 **Checkpoint**: catálogo y configuración completos y probados.
@@ -207,8 +207,8 @@ modificarlo en Borrador, pasarlo a Final y comprobar que no admite cambios por n
 - [ ] T075 [US4] Implement `Numerador` (next number inside a `BEGIN IMMEDIATE` transaction) in `backend/Optica.Api/Presupuestos/Numerador.cs`
 - [ ] T076 [US4] Implement `ServicioPresupuestos` (validaciones con claves de campo; líneas nuevas desde el catálogo, existentes conservadas; cálculos via `Calculadora`; transición Borrador → Final; rechazo de cambios sobre Final) in `backend/Optica.Api/Presupuestos/ServicioPresupuestos.cs`
 - [ ] T077 [US4] Implement `GET /api/presupuestos/{id}`, `POST` and `PUT /api/presupuestos` per `contracts/api-http.md` in `backend/Optica.Api/Presupuestos/EndpointsPresupuestos.cs`
-- [ ] T078 [P] [US4] Implement the article picker (search by code or description, max 50) in `frontend/src/presupuestos/BuscadorArticulos.tsx`
-- [ ] T079 [P] [US4] Implement the lines grid with the seven columns (AC-25) using `frontend/src/calculos/lineas.ts` in `frontend/src/presupuestos/GrillaLineas.tsx`
+- [ ] T078 [P] [US4] Implement the article picker (search by code or description, max 50) in `frontend/src/presupuestos/BuscadorArticulos.tsx`; write the failing test `frontend/src/presupuestos/BuscadorArticulos.test.tsx` first (búsqueda por código y por descripción, selección devuelve el artículo)
+- [ ] T079 [P] [US4] Implement the lines grid with the seven columns (AC-25) using `frontend/src/calculos/lineas.ts` in `frontend/src/presupuestos/GrillaLineas.tsx`; write the failing test `frontend/src/presupuestos/GrillaLineas.test.tsx` first (siete columnas, importes con formato `$ 1.815,00`, recálculo al cambiar cantidad o descuento)
 - [ ] T080 [US4] Implement the budget editor (cliente, líneas, total, estado, Grabar, solo lectura en Final) in `frontend/src/presupuestos/EditorPresupuesto.tsx`
 
 **Checkpoint**: las cuatro historias P1 forman el MVP.
@@ -312,7 +312,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 
 - [ ] T111 [P] Write and pass a test that the security log never contains passwords, DNI or client names after login failures, lockouts and configuration changes (R15, CHK039) in `tests/Optica.Tests/Acceso/RegistroSeguridadTests.cs`
 - [ ] T112 Configure the production build: Vite `build.outDir` → `backend/Optica.Api/wwwroot` in `frontend/vite.config.ts`, and verify the API serves the SPA with fallback (research R4)
-- [ ] T113 [P] Update `AGENTS.md` ("Cómo correr" para producción con el frontend servido por la API; nuevas dependencias ClosedXML, QRCoder y PdfPig; quitar la importación Excel de pendientes si quedara)
+- [ ] T113 [P] Update `AGENTS.md` ("Cómo correr" para producción con el frontend servido por la API; nuevas dependencias ClosedXML, QRCoder y PdfPig)
 - [ ] T114 Run the full verification (`dotnet test Optica.slnx`, including traits `Rendimiento`; `cd frontend && npm test && npm run build && npm run lint`) and fix failures
 - [ ] T115 Run the manual walkthroughs 1–12 of `specs/001-presupuestos-facturacion-arca/quickstart.md` in Chrome and Edge (stable and previous, RNF-03, SC-008) and record the results in `specs/001-presupuestos-facturacion-arca/quickstart.md`
 

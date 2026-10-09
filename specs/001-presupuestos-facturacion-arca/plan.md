@@ -102,6 +102,7 @@ tests/
 ├── vectores-calculo.json      # casos compartidos backend/frontend
 └── Optica.Tests/
     ├── AppDePrueba.cs         # host de prueba: SQLite temporal, reloj falso, espía de ARCA
+    ├── Datos/  Arca/          # calculadora, normalización, converters; simulador de ARCA
     ├── Acceso/  Configuracion/  Catalogo/  Presupuestos/  Facturacion/
     └── Planillas/             # .xlsx de prueba generados en el test
 frontend/
