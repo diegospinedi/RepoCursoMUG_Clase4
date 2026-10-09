@@ -15,6 +15,12 @@ public abstract record ResultadoEmision
     public sealed record PresupuestoBorrador : ResultadoEmision;
     public sealed record YaFacturado : ResultadoEmision;
     public sealed record NoEncontrado : ResultadoEmision;
+
+    /// <summary>El número registrado figura autorizado con otro total (FR-037, RF-91).</summary>
+    public sealed record Bloqueada(Factura Factura) : ResultadoEmision;
+    public sealed record NoPendiente : ResultadoEmision;
+    public sealed record Descartada : ResultadoEmision;
+    public sealed record NoBloqueada : ResultadoEmision;
 }
 
 /// <summary>Las emisiones son de a una en toda la aplicación (research R10).</summary>
@@ -67,6 +73,69 @@ public sealed class ServicioEmision(
         {
             candado.Semaforo.Release();
         }
+    }
+
+    /// <summary>
+    /// Reintenta una emisión Pendiente consultando primero el número registrado (RF-65): con el mismo total
+    /// recupera el CAE (RF-75, RF-90); si no existe, la envía con la fecha de hoy; con otro total la bloquea
+    /// para revisión humana sin emitir ni recuperar nada (RF-91, RF-92).
+    /// </summary>
+    public async Task<ResultadoEmision> ReintentarAsync(int facturaId)
+    {
+        await candado.Semaforo.WaitAsync();
+        try
+        {
+            var factura = await db.Set<Factura>().SingleOrDefaultAsync(f => f.Id == facturaId);
+            if (factura is null) return new ResultadoEmision.NoEncontrado();
+            if (factura.Estado == EstadoFactura.Bloqueada) return new ResultadoEmision.Bloqueada(factura);
+            if (factura.Estado != EstadoFactura.Pendiente) return new ResultadoEmision.NoPendiente();
+
+            ResultadoConsulta consulta;
+            using (var espera = Espera())
+            {
+                try
+                {
+                    consulta = await arca.ConsultarAsync(factura.PuntoVenta, factura.Tipo, factura.Numero, espera.Token);
+                }
+                catch (Exception e) when (e is ArcaSinRespuestaException or OperationCanceledException)
+                {
+                    return new ResultadoEmision.SinRespuesta(factura.Id);
+                }
+            }
+
+            switch (consulta)
+            {
+                case Existe e when e.Total == factura.Total:
+                    factura.Cae = e.Cae;
+                    factura.VencimientoCae = e.Vencimiento;
+                    factura.Estado = EstadoFactura.Autorizada;
+                    await db.SaveChangesAsync();
+                    return new ResultadoEmision.Autorizada(factura);
+                case Existe:
+                    factura.Estado = EstadoFactura.Bloqueada;
+                    await db.SaveChangesAsync();
+                    return new ResultadoEmision.Bloqueada(factura);
+                default:
+                    factura.Fecha = reloj.Hoy();
+                    await db.SaveChangesAsync();
+                    return await EnviarAsync(factura);
+            }
+        }
+        finally
+        {
+            candado.Semaforo.Release();
+        }
+    }
+
+    /// <summary>La operadora confirmó que revisó el punto de venta en ARCA: la Bloqueada pasa a Descartada (FR-038b).</summary>
+    public async Task<ResultadoEmision> ConfirmarRevisionAsync(int facturaId)
+    {
+        var factura = await db.Set<Factura>().SingleOrDefaultAsync(f => f.Id == facturaId);
+        if (factura is null) return new ResultadoEmision.NoEncontrado();
+        if (factura.Estado != EstadoFactura.Bloqueada) return new ResultadoEmision.NoBloqueada();
+        factura.Estado = EstadoFactura.Descartada;
+        await db.SaveChangesAsync();
+        return new ResultadoEmision.Descartada();
     }
 
     /// <summary>Envía la emisión Pendiente con la fecha del envío efectivo (research R10).</summary>
