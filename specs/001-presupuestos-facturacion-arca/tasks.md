@@ -146,7 +146,7 @@ ejemplos numéricos del PRD.
 - [X] T050 [US2] Register Configuracion, Proveedor and Articulo in `backend/Optica.Api/Datos/OpticaDbContext.cs` (unique index `(ProveedorId, CodigoProveedor)` with `COLLATE BINARY`) and add migration `CatalogoYConfiguracion`
 - [X] T051 [US2] Implement `ServicioPrecios` (precio de venta via `Calculadora` with the current múltiplo; recálculo de todo el catálogo en una transacción) in `backend/Optica.Api/Catalogo/ServicioPrecios.cs`
 - [X] T052 [US2] Implement `GET/PUT /api/configuracion` with validations and recálculo only when the múltiplo changes, returning `articulosRecalculados`, logging the change (R15) in `backend/Optica.Api/Configuracion/EndpointsConfiguracion.cs`
-- [ ] T053 [P] [US2] Implement `GET/POST/PUT /api/proveedores` in `backend/Optica.Api/Catalogo/EndpointsProveedores.cs`
+- [X] T053 [P] [US2] Implement `GET/POST/PUT /api/proveedores` in `backend/Optica.Api/Catalogo/EndpointsProveedores.cs`
 - [ ] T054 [US2] Implement `GET/POST/PUT /api/articulos` per `contracts/api-http.md` in `backend/Optica.Api/Catalogo/EndpointsArticulos.cs`
 - [ ] T055 [P] [US2] Implement the Configuración screen in `frontend/src/configuracion/Configuracion.tsx`
 - [ ] T056 [P] [US2] Implement the Proveedores screen in `frontend/src/proveedores/Proveedores.tsx`; write the failing test `frontend/src/proveedores/Proveedores.test.tsx` first
