@@ -51,7 +51,7 @@ juntas, después de pasar `dotnet test Optica.slnx` y, en `frontend/`, `npm test
 - [X] T005 [P] Scaffold `frontend/` with Vite + React 19 + TypeScript (`frontend/package.json`, `frontend/tsconfig.json`, `frontend/vite.config.ts` with proxy `/api` → `http://localhost:5220` and `test.environment = "jsdom"`, `frontend/eslint.config.js`); scripts `dev`, `build`, `test` (vitest run), `lint`
 - [X] T006 [P] Add frontend dependencies in `frontend/package.json`: react-router, @fontsource/montserrat, @fontsource/barlow; dev: vitest, jsdom, @testing-library/react, @testing-library/user-event, @testing-library/jest-dom
 - [X] T007 [P] Create `backend/Optica.Api/appsettings.json` with `Arca` (`Entorno: "Simulado"`, `PuntoVenta`, `TiempoEsperaSegundos: 30`, `Simulador: { Modo: "Normal", Archivo: "arca-simulado.json" }`) and `Emisor` (razón social, domicilio, CUIT, condición IVA, ingresos brutos, inicio de actividades, all "COMPLETAR"); no secrets (research R14)
-- [ ] T008 [P] Add Montserrat (600, 700) and Barlow (400, 500, 600) TTF files (OFL) to `backend/Optica.Api/Recursos/` and link `Marca/logo.png` and `Marca/branding.json` as content files copied to output in `backend/Optica.Api/Optica.Api.csproj`
+- [X] T008 [P] Add Montserrat (600, 700) and Barlow (400, 500, 600) TTF files (OFL) to `backend/Optica.Api/Recursos/` and link `Marca/logo.png` and `Marca/branding.json` as content files copied to output in `backend/Optica.Api/Optica.Api.csproj`
 
 ---
 
