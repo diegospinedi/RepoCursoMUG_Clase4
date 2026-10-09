@@ -74,7 +74,7 @@ juntas, después de pasar `dotnet test Optica.slnx` y, en `frontend/`, `npm test
 
 ### Implementation for Foundational
 
-- [ ] T017 [P] Implement `Calculadora` (precio de venta = costo × (1 + margen/100) redondeado hacia +∞ al múltiplo; líneas y totales con `MidpointRounding.AwayFromZero`; desglose B neto = round(total / (1 + alícuota/100), 2), IVA = total − neto) per research R3 in `backend/Optica.Api/Datos/Calculadora.cs`
+- [X] T017 [P] Implement `Calculadora` (precio de venta = costo × (1 + margen/100) redondeado hacia +∞ al múltiplo; líneas y totales con `MidpointRounding.AwayFromZero`; desglose B neto = round(total / (1 + alícuota/100), 2), IVA = total − neto) per research R3 in `backend/Optica.Api/Datos/Calculadora.cs`
 - [ ] T018 [P] Implement `Normalizacion` (minúsculas sin diacríticos; solo dígitos) in `backend/Optica.Api/Datos/Normalizacion.cs`
 - [ ] T019 [P] Implement the EF Core value converters (importe → `INTEGER` centavos, porcentaje → `INTEGER` centésimos) in `backend/Optica.Api/Datos/Conversores.cs`
 - [ ] T020 Create `OpticaDbContext` with the converters applied by convention and a connection interceptor that sets `PRAGMA journal_mode=WAL` and `PRAGMA busy_timeout=5000` in `backend/Optica.Api/Datos/OpticaDbContext.cs` (depends on T019)
