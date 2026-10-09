@@ -50,3 +50,30 @@ sistema" se prueba con los tests de integración, no desde el navegador (researc
 
 El caso "otro total" (Bloqueada → Descartada) se reproduce solo con tests de integración, editando el
 espía de ARCA de `AppDePrueba`.
+
+## Resultados de la validación
+
+### 2026-10-09 — API en modo Production, con curl (sin navegador)
+
+La API sirvió el frontend compilado (`/`, `/presupuestos` y `/facturas/5` devuelven `index.html` sin sesión) y
+respondió 401 en `/api/*` sin sesión.
+
+| # | Resultado |
+|---|---|
+| 1 | Contraseña de 7 caracteres → 400; de 8 → 204; ingreso → 204. El bloqueo por 5 fallos se verificó solo con tests (dura 5 minutos reales) |
+| 2 | Artículo ABC-1 (1.210, 50 %) → precio de venta $ 1.815,00 |
+| 3 | Múltiplo 50 → 1 artículo recalculado, $ 1.850,00 |
+| 4 | No probado en vivo (sin generador de .xlsx en la PC); cubierto por `ImportacionTests` |
+| 5 | Sin DNI → 400 `cliente.dni` "Ingresá el DNI del cliente"; con DNI → presupuesto 1 en Borrador, 3 × $ 1.815 con 10 % = $ 4.900,50 |
+| 6 | Pasa a Final; editarlo después → 409 |
+| 7 | PDF de un Borrador → 409; del Final → PDF con logo, cliente, líneas y "Precios finales, IVA incluido" (revisado visualmente) |
+| 8 | Factura B 0003-00000001 autorizada; PDF con datos del emisor, QR, CAE y "COMPROBANTE SIMULADO — SIN VALIDEZ FISCAL" (revisado visualmente; se corrigió el recuadro de la letra) |
+| 9 | Modo `Rechazar` → 502 con código 10016 y descripción; no se registra factura |
+| 10 | Modo `AutorizarSinResponder` → 504 a los 30 s; con `Normal`, Reintentar recupera el CAE sin emitir otro (número 3) |
+| 11 | Modo `SinRespuesta` → 504; con `Normal`, Reintentar consulta, no existe y emite (número 2) |
+| 12 | Búsqueda de facturas por "gonzalez", parte del DNI y del número → la factura correcta |
+
+### Pendiente
+
+- Recorridos 1–12 desde la interfaz en Chrome y Edge, versión estable y anterior (RNF-03, SC-008).
+- Medición de RNF-01 en pantalla (los tests miden la API).
