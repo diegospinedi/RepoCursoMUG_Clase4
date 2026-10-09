@@ -124,8 +124,9 @@ es confiable (research R4).
 
 ## Riesgos y dependencias para la implementación
 
-- `Marca/` no existe todavía en el repositorio: hay que incorporar `branding.json`, `logo.png` y las
-  fuentes antes de las pantallas y los PDF (FR-040).
+- `Marca/` ya está en el repositorio (`branding.json`, `logo.png` y el original `Marca.jpg`). Faltan las
+  fuentes Montserrat y Barlow en TTF para los PDF (`backend/Optica.Api/Recursos/`, licencia OFL); el
+  frontend las toma de `@fontsource` (FR-040).
 - El dominio y el JSON del QR de ARCA se validan contra la especificación vigente antes de pasar a
   homologación (R11).
 - Pendiente del responsable: el criterio para pedidos de rectificación o supresión de datos (Ley 25.326)
