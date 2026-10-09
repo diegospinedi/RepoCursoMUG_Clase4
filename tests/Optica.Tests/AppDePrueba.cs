@@ -28,6 +28,7 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
 
     private readonly string _base = Path.Combine(Path.GetTempPath(), $"optica-{Guid.NewGuid():N}.db");
     private readonly Dictionary<string, string?> _ajustes = [];
+    private readonly List<Action<IServiceCollection>> _servicios = [];
 
     public FakeTimeProvider Reloj { get; } = new(new DateTimeOffset(2026, 10, 9, 10, 0, 0, TimeSpan.FromHours(-3)));
 
@@ -41,6 +42,13 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
     public AppDePrueba Con(string clave, string? valor)
     {
         _ajustes[clave] = valor;
+        return this;
+    }
+
+    /// <summary>Servicios adicionales (por ejemplo, interceptores de EF Core para simular fallas).</summary>
+    public AppDePrueba ConServicios(Action<IServiceCollection> configurar)
+    {
+        _servicios.Add(configurar);
         return this;
     }
 
@@ -59,6 +67,7 @@ public sealed class AppDePrueba : WebApplicationFactory<Program>
             servicios.RemoveAll<IServicioArca>();
             servicios.AddSingleton<IServicioArca>(Arca);
             servicios.AddSingleton<IStartupFilter, FiltroIpDePrueba>();
+            foreach (var configurar in _servicios) configurar(servicios);
         });
     }
 
