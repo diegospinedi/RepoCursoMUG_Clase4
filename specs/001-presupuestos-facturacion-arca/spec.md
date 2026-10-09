@@ -130,6 +130,11 @@ contra los ejemplos numéricos del PRD.
 9. **Given** un artículo del proveedor "Lentes SA" con código "ABC-1", **When** intento grabar otro de
    "Lentes SA" con el mismo código, **Then** el sistema lo rechaza; "abc-1" en "Lentes SA" o "ABC-1" en
    otro proveedor se aceptan como artículos distintos.
+10. **Given** el proveedor "Lentes SA", **When** intento dar de alta otro llamado "lentes sa" o uno sin
+    nombre, **Then** el sistema lo rechaza junto al campo nombre; **When** cambio el nombre a "Lentes
+    Sur SA", **Then** queda grabado (FR-011a).
+11. **Given** la pantalla de Configuración, **When** ingreso una alícuota de IVA de 20, **Then** el sistema
+    no la acepta e indica los valores válidos (0; 2,5; 5; 10,5; 21; 27); con 10,5 la acepta (FR-007a).
 
 ---
 
@@ -176,6 +181,11 @@ inválidas y con formato incorrecto, y verificar el catálogo resultante y el re
     artículo queda sin cambios.
 11. **Given** el margen predeterminado sin configurar, **When** intento importar, **Then** el sistema no
     procesa la planilla e indica que primero hay que configurar el margen predeterminado.
+12. **Given** una planilla válida de 3 filas, **When** ocurre un error al grabar la tercera, **Then**
+    ningún artículo cambia, la importación no aparece en el historial y se informa que no se aplicó
+    (FR-050).
+13. **Given** una importación en curso, **When** otra sesión intenta importar, **Then** se rechaza con el
+    aviso de importación en curso (FR-050a).
 
 ---
 
@@ -353,7 +363,9 @@ presupuesto de origen de cada una.
 - Cambio de múltiplo de redondeo: recalcula todo el catálogo pero no los presupuestos ya grabados (RF-86,
   RF-87). Cambiar la alícuota o la condición fiscal no modifica ningún precio de venta.
 - Cambio de condición fiscal con presupuestos Final aún sin facturar: se factura con la condición vigente
-  al momento de emitir.
+  al momento de emitir. Si ya hay una emisión Pendiente, el reintento conserva lo registrado (FR-037).
+- Importación en curso mientras otra operadora arma un presupuesto: el presupuesto sigue funcionando y
+  toma los precios vigentes al grabar (FR-050a).
 - Dos operadoras facturando a la vez: las emisiones se procesan de a una para no duplicar números.
 - Búsquedas con acentos, mayúsculas, puntos o guiones: se ignoran según RF-82 y RF-88.
 - Intento de facturar dos veces el mismo presupuesto: se rechaza, porque un presupuesto origina como
@@ -366,10 +378,17 @@ presupuesto de origen de cada una.
 **Acceso**
 
 - **FR-001**: El sistema MUST exigir una contraseña de al menos 8 caracteres para acceder, definida la
-  primera vez solo desde la PC donde corre el sistema (RNF-04).
+  primera vez solo desde la PC donde corre el sistema (RNF-04). "Desde la PC donde corre el sistema"
+  significa un pedido originado en esa misma computadora; cualquier pedido desde otro equipo de la red
+  local cuenta como remoto.
 - **FR-002**: El sistema MUST bloquear el ingreso 5 minutos tras 5 intentos fallidos consecutivos y
   liberarlo solo (RNF-08).
-- **FR-003**: El sistema MUST cerrar la sesión tras 60 minutos de inactividad (RNF-09).
+- **FR-003**: El sistema MUST cerrar la sesión tras 60 minutos de inactividad (RNF-09). Cuenta como
+  actividad cualquier acción de la operadora que llegue al sistema (consultar, buscar, grabar, descargar);
+  mirar una pantalla abierta sin operar no cuenta.
+- **FR-003a**: Si la sesión vence con un formulario abierto, el sistema MUST pedir la contraseña sin
+  descartar lo cargado, para que la operadora pueda grabar al volver a ingresar. Lo no grabado no se
+  guarda fuera de la pantalla abierta.
 - **FR-004**: El sistema MUST guardar la contraseña solo como hash con sal, nunca en texto plano (RNF-14).
 - **FR-005**: El sistema MUST rechazar sin devolver datos todo pedido sin sesión iniciada (AC-79).
 - **FR-005a**: El sistema MUST permitir cambiar la contraseña desde una sesión iniciada, exigiendo la
@@ -378,17 +397,23 @@ presupuesto de origen de cada una.
   únicamente desde la PC donde corre el sistema; el pedido desde cualquier otro equipo MUST rechazarse.
 - **FR-005c**: Al cambiar o restablecer la contraseña, el sistema MUST cerrar todas las demás sesiones
   abiertas y liberar un bloqueo por intentos fallidos vigente.
+- **FR-005d**: El sistema MUST registrar con fecha y hora los ingresos fallidos, los bloqueos, los cambios
+  y restablecimientos de contraseña y los cambios de Configuración, en un registro local que puede
+  consultar quien administra la PC. El registro MUST NOT contener contraseñas ni datos de clientes.
 
 **Configuración**
 
 - **FR-006**: El sistema MUST permitir administrar desde una pantalla protegida la alícuota de IVA, la
   condición fiscal (Responsable Inscripto o Monotributo), el tope de identificación del receptor, el
-  múltiplo de redondeo comercial y el margen predeterminado para artículos nuevos (0 a 1000 %) (RF-63).
-- **FR-007**: El sistema MUST rechazar un múltiplo de redondeo menor a 0,01 (RF-72).
+  múltiplo de redondeo comercial y el margen predeterminado para artículos nuevos (0 a 1000 %) (RF-63). El
+  tope de identificación MUST ser mayor a 0 y como máximo $999.999.999,99.
+- **FR-007**: El sistema MUST rechazar un múltiplo de redondeo menor a 0,01 (RF-72) o mayor a 1.000.
 - **FR-007a**: El sistema MUST admitir como alícuota de IVA únicamente 0; 2,5; 5; 10,5; 21 o 27, las que
   acepta ARCA, y rechazar cualquier otro valor indicando los valores válidos.
 - **FR-008**: El sistema MUST NOT mostrar ni permitir editar en pantalla el certificado digital ni el punto
-  de venta de ARCA (RF-64).
+  de venta de ARCA (RF-64). El certificado y su clave MUST guardarse fuera de la aplicación y del
+  repositorio de código, en una ubicación de la PC accesible solo para el sistema, y nunca en un archivo
+  de configuración versionado.
 - **FR-009**: Al grabar un cambio del múltiplo de redondeo, el sistema MUST recalcular y guardar el precio
   de venta de todo el catálogo, sin modificar líneas de presupuestos ya grabados (RF-86, RF-87). Un cambio
   de alícuota o de condición fiscal MUST NOT modificar precios de venta: solo afecta a las facturas que se
@@ -398,15 +423,20 @@ presupuesto de origen de cada una.
 
 - **FR-010**: El sistema MUST permitir cargar y modificar artículos con código autonumérico, proveedor,
   código en el proveedor, descripción, precio de costo (final, con IVA) y margen de utilidad (RF-20).
+- **FR-010a**: Los importes (costos, precios, tope y múltiplo) MUST admitir como máximo 2 decimales, y los
+  porcentajes de margen y de descuento también como máximo 2 decimales; un valor con más decimales se
+  rechaza indicando el máximo permitido. La alícuota de IVA se elige de la lista de FR-007a.
 - **FR-011**: El código en el proveedor MUST ser único dentro de cada proveedor y distinguir mayúsculas de
   minúsculas ("ABC-1" y "abc-1" son artículos distintos); proveedores distintos pueden repetir códigos.
 - **FR-011a**: El sistema MUST permitir dar de alta proveedores y modificar su nombre, que es obligatorio
-  y único.
+  y único sin distinguir mayúsculas. El nombre es el único dato del proveedor y no hay baja de proveedores
+  en esta versión, igual que con los artículos.
 - **FR-012**: El sistema MUST calcular el precio de venta como costo × (1 + margen / 100) en las dos
   condiciones fiscales, sin intervención de la alícuota de IVA. Con Responsable Inscripto es el resultado
   de los tres pasos de RF-21 con alícuota única; con Monotributo, la fórmula de RF-84 (RF-21, RF-84).
 - **FR-013**: El sistema MUST redondear el precio de venta hacia arriba al múltiplo de redondeo comercial
-  configurado y guardarlo ya redondeado (RF-56, RF-58).
+  configurado y guardarlo ya redondeado (RF-56, RF-58). "Hacia arriba" es hacia el valor mayor, también
+  para precios negativos: con múltiplo $50, −1.815,37 se guarda como −1.800,00.
 - **FR-014**: El sistema MUST recalcular el precio de venta al modificar costo o margen, y mostrarlo como
   dato de solo lectura (RF-45, RF-70).
 - **FR-015**: El sistema MUST aceptar márgenes de utilidad entre 0 % y 1000 %, ambos inclusive, y
@@ -419,7 +449,8 @@ presupuesto de origen de cada una.
   y Precio de Costo (precio final del proveedor, con IVA) (RF-22, RF-23, enmendado). La planilla MUST
   tener como máximo 10 MB y 20.000 filas de datos; si los supera, se rechaza completa como en FR-043.
 - **FR-043**: El sistema MUST rechazar completa, sin cambiar ningún artículo, una planilla con columnas
-  faltantes, columnas de más o encabezados distintos, e informar que el formato no es el esperado (RF-78,
+  faltantes, columnas de más o encabezados distintos (se comparan exactamente: una diferencia de
+  mayúsculas, acentos o espacios cuenta como distinto), e informar que el formato no es el esperado (RF-78,
   RF-79).
 - **FR-044**: Por cada fila cuyo código ya exista en ese proveedor, el sistema MUST actualizar el precio de
   costo y recalcular el precio de venta, sin cambiar descripción ni margen (RF-47). En esas filas la
@@ -442,10 +473,17 @@ presupuesto de origen de cada una.
   cero" (RF-80, RF-93).
 - **FR-048**: Al terminar, el sistema MUST mostrar un resumen con la cantidad de artículos creados y
   actualizados y la lista de filas no procesadas con su número de fila, código y razón (RF-24).
+- **FR-048a**: El sistema MUST guardar cada importación aplicada (proveedor, fecha, archivo, cantidades y
+  filas informadas) y permitir consultar ese historial por proveedor. Una planilla rechazada por formato o
+  por límites no queda en el historial.
 - **FR-049**: Los artículos del proveedor que no figuren en la planilla MUST quedar sin cambios, y los de
   otros proveedores no se tocan.
-- **FR-050**: Una importación MUST aplicarse completa o no aplicarse: si se interrumpe, el catálogo queda
-  como estaba antes.
+- **FR-050**: Una importación MUST aplicarse completa o no aplicarse: si ocurre cualquier error al grabar
+  los cambios (por ejemplo, una falla de la base o un corte del proceso), el catálogo queda como estaba
+  antes y se informa que la importación no se aplicó.
+- **FR-050a**: El sistema MUST procesar una sola importación a la vez; un segundo pedido mientras otra está
+  en curso se rechaza indicando que hay una importación en curso. Los presupuestos se pueden seguir
+  armando durante una importación: cada línea nueva toma el precio de venta vigente al grabarse.
 
 **Presupuestos**
 
@@ -466,6 +504,8 @@ presupuesto de origen de cada una.
 - **FR-021**: El sistema MUST calcular precio con descuento = precio unitario × (1 − descuento / 100)
   redondeado a 2 decimales (mitad hacia arriba); precio final = precio con descuento redondeado ×
   cantidad, redondeado; total = suma de precios finales redondeados (RF-13, RF-14, RF-15, RF-19, RF-44).
+  El total de un presupuesto MUST ser como máximo $999.999.999,99; si lo supera, no se graba y se indica
+  el máximo.
 - **FR-022**: Los importes en pantalla y en el PDF del presupuesto MUST expresarse con IVA incluido y sin
   discriminar IVA (RF-18, RF-42).
 - **FR-023**: El sistema MUST rechazar una línea cuyo precio unitario sea negativo; un precio unitario de
@@ -487,14 +527,19 @@ presupuesto de origen de cada una.
 
 - **FR-027**: El sistema MUST permitir facturar solo presupuestos en estado Final, tomando sus datos y
   líneas sin volver a cargarlos (RF-25, RF-62).
+- **FR-027a**: Un presupuesto MUST originar como máximo una factura autorizada. Mientras tenga una emisión
+  Pendiente, Bloqueada o Autorizada, el sistema MUST rechazar un nuevo pedido de facturación, aun si dos
+  operadoras lo piden al mismo tiempo.
 - **FR-028**: El sistema MUST emitir Factura B con Responsable Inscripto y Factura C con Monotributo (solo
   con el total) (RF-26, RF-43, RF-46, RF-76, RF-85). En la Factura B, el desglose se calcula una vez sobre
   el total al emitir: neto = total / (1 + alícuota / 100), redondeado a 2 decimales (mitad hacia arriba), e
   IVA = total − neto, de modo que neto + IVA es siempre igual al total.
 - **FR-029**: El sistema MUST identificar al receptor como "Consumidor Final" sin identificar si el total
-  es menor o igual al tope configurado, y con su DNI si lo supera (RF-27, RF-49, RF-71).
+  final de la factura (con IVA incluido) es menor o igual al tope configurado, y con su DNI si lo supera (RF-27, RF-49, RF-71).
 - **FR-030**: El sistema MUST solicitar el CAE a ARCA y guardar la factura autorizada con número (por punto
-  de venta), CAE, vencimiento del CAE y vínculo al presupuesto de origen (RF-28, RF-29).
+  de venta), CAE, vencimiento del CAE y vínculo al presupuesto de origen (RF-28, RF-29). La fecha del
+  comprobante es la del día en que se envía a ARCA el pedido que resulta autorizado; si se reintenta otro
+  día, se usa la fecha del reintento.
 - **FR-031**: Una factura con CAE MUST NOT modificarse ni eliminarse por ninguna vía (RF-32).
 - **FR-032**: El sistema MUST generar y permitir descargar el PDF de la factura con los datos de RF-30
   (emisor, tipo, punto de venta, número, fecha, receptor, líneas, total, CAE, vencimiento y QR de ARCA)
@@ -506,14 +551,18 @@ presupuesto de origen de cada una.
 
 - **FR-034**: Si ARCA rechaza el pedido, el sistema MUST NOT registrar la factura y MUST mostrar el código
   y la descripción del error (RF-31, RF-51).
-- **FR-035**: El sistema MUST dar por no disponible a ARCA tras 30 segundos sin respuesta y MUST NOT
-  reintentar por su cuenta; el reintento lo decide la operadora (RF-52, RNF-10).
+- **FR-035**: El sistema MUST dar por no disponible a ARCA tras 30 segundos sin respuesta, contados desde
+  que envía el pedido de autorización, y MUST NOT reintentar por su cuenta; el reintento lo decide la
+  operadora (RF-52, RNF-10). El mensaje MUST decir que ARCA no respondió, que la emisión quedó pendiente
+  y que se puede reintentar más tarde.
 - **FR-036**: Antes de enviar cada pedido, el sistema MUST registrar el número de comprobante que solicita
   (último autorizado + 1), y emitir de a una factura por vez (RF-89).
 - **FR-037**: Al reintentar una emisión sin respuesta, el sistema MUST consultar a ARCA el número
   registrado: si figura autorizado con el mismo total, recupera y guarda su CAE sin emitir otro; si no
   figura, envía el pedido; si figura con otro total, no emite ni recupera nada y avisa que se revise el
-  punto de venta en ARCA (RF-65, RF-66, RF-75, RF-90, RF-91, RF-92).
+  punto de venta en ARCA (RF-65, RF-66, RF-75, RF-90, RF-91, RF-92). Un reintento MUST usar el tipo de
+  comprobante, el receptor y los importes registrados en el primer intento, aunque la Configuración haya
+  cambiado después.
 - **FR-038**: Cada emisión MUST estar en uno de estos estados: Pendiente (sin respuesta de ARCA, se puede
   reintentar), Bloqueada (caso de otro total de FR-037, no se puede reintentar), Autorizada (con CAE,
   final) o Descartada (final, sin comprobante). Un rechazo de ARCA no registra ninguna emisión (FR-034),
@@ -533,6 +582,9 @@ presupuesto de origen de cada una.
   #FFFFFF) en todas las pantallas y PDF (RF-34, RF-55).
 - **FR-041**: Todo error de validación MUST indicar junto al campo afectado qué hacer para corregirlo
   (RF-35).
+- **FR-041a**: Los mensajes de error (de validación, de importación, de acceso y de ARCA) MUST NOT mostrar
+  datos de otros clientes, contraseñas ni detalles internos del sistema; los errores de ARCA muestran solo
+  el código y la descripción que devuelve ARCA.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -602,7 +654,10 @@ presupuesto de origen de cada una.
   emite contra ARCA producción durante el desarrollo.
 - La numeración de presupuestos arranca en 1 (confirmado en la clarificación del 2026-10-08).
 - El tope de identificación inicial es $10.000.000 y la lista de datos del PDF de factura (RF-30) se valida
-  con el contador de la óptica.
+  con el contador de la óptica. Responsable: el responsable del proyecto, antes de habilitar la conexión
+  real con ARCA (homologación); hasta entonces se trabaja con estos valores provisorios.
+- El código QR de la factura sigue la especificación de ARCA para comprobantes electrónicos (dependencia
+  externa); su formato se valida contra la versión vigente antes de pasar a homologación.
 - Un presupuesto Final origina como máximo una factura autorizada; mientras tenga una emisión Pendiente,
   Bloqueada o Autorizada no se puede iniciar otra.
 - Los datos del emisor (razón social, domicilio, CUIT, ingresos brutos, inicio de actividades), el
@@ -610,4 +665,10 @@ presupuesto de origen de cada una.
 - El sistema corre en la PC del local y se usa solo desde esa PC o la red local; no se publica en internet.
 - Los datos de clientes se guardan sin cifrado en reposo: riesgo asumido por el responsable del proyecto
   (19/09/2026); el control es el acceso con contraseña.
+- Ley 25.326: los pedidos de acceso de un titular se atienden consultando sus presupuestos y facturas. Los
+  de rectificación o supresión sobre presupuestos Final o facturas se resuelven fuera del sistema, porque
+  esos registros son inmutables (RF-08, RF-32); en esta versión no hay ningún mecanismo para editarlos.
+  Queda pendiente que el responsable del proyecto defina un criterio con asesoramiento legal.
+- Como hay una sola contraseña, cualquier equipo de la red local puede provocar un bloqueo de 5 minutos
+  con intentos fallidos. Es un riesgo aceptado: el bloqueo es breve y la red es del local.
 - El logo y la paleta de la óptica están disponibles en los archivos de marca del proyecto.
