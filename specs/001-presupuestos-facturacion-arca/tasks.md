@@ -261,7 +261,7 @@ receptor, importes enviados, CAE guardado y PDF.
 - [X] T096 [US6] Implement `ArmadorComprobante` (tipo por condición fiscal, receptor por tope, desglose B via `Calculadora`, ids de alícuota de ARCA) in `backend/Optica.Api/Facturacion/ArmadorComprobante.cs`
 - [X] T097 [US6] Implement `ServicioEmision.Facturar` (`SemaphoreSlim(1)`; registra Pendiente con la foto del comprobante; `SolicitarCae` con `CancellationToken` de `Arca:TiempoEsperaSegundos`; Autorizada con CAE; rechazo elimina la Pendiente) per research R10 in `backend/Optica.Api/Facturacion/ServicioEmision.cs`
 - [X] T098 [P] [US6] Implement `QrArca` with QRCoder per research R11 in `backend/Optica.Api/Facturacion/QrArca.cs`
-- [ ] T099 [P] [US6] Implement `PdfFactura` with QuestPDF (datos de RF-30, logo y colores, QR, leyenda de simulado when `Arca:Entorno = Simulado`) in `backend/Optica.Api/Facturacion/PdfFactura.cs`
+- [X] T099 [P] [US6] Implement `PdfFactura` with QuestPDF (datos de RF-30, logo y colores, QR, leyenda de simulado when `Arca:Entorno = Simulado`) in `backend/Optica.Api/Facturacion/PdfFactura.cs`
 - [ ] T100 [US6] Implement `POST /api/presupuestos/{id}/factura`, `GET /api/facturas/{id}` and `GET /api/facturas/{id}/pdf` per `contracts/api-http.md` in `backend/Optica.Api/Facturacion/EndpointsFacturas.cs`
 - [ ] T101 [US6] Implement the Facturar action in `frontend/src/presupuestos/EditorPresupuesto.tsx` and the invoice detail with PDF download in `frontend/src/facturas/DetalleFactura.tsx`
 
