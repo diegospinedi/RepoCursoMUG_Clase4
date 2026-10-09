@@ -34,7 +34,8 @@ public static class PdfFactura
                     col.Item().Text($"Ingresos Brutos: {emisor.IngresosBrutos}");
                     col.Item().Text($"Inicio de actividades: {emisor.InicioActividades}");
                 });
-                fila.ConstantItem(60).AlignCenter().Border(2).BorderColor(recursos.ColorPrimario).Padding(6).AlignCenter()
+                fila.ConstantItem(60).AlignTop().AlignCenter().Width(52).Height(52).Border(2).BorderColor(recursos.ColorPrimario)
+                    .AlignCenter().AlignMiddle()
                     .Text(f.Letra).FontFamily(RecursosPdf.FuenteTitulos).Bold().FontSize(28).FontColor(recursos.ColorPrimario);
                 fila.RelativeItem().AlignRight().Column(col =>
                 {
