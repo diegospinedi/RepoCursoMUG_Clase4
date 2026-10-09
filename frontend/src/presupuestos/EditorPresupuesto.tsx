@@ -4,6 +4,7 @@ import { ErrorApi, ErrorValidacion, pedir } from '../api/cliente'
 import type { Articulo, FacturaEmitida, Presupuesto } from '../api/tipos'
 import { calcularTotal, formatearImporte } from '../calculos/lineas'
 import { CampoConError } from '../comunes/CampoConError'
+import { EstadoEmision } from '../facturas/EstadoEmision'
 import { formatearFecha } from '../comunes/fechas'
 import { aCentavos, aTexto, numeroComprobante } from '../comunes/numeros'
 import { BuscadorArticulos } from './BuscadorArticulos'
@@ -161,11 +162,11 @@ export function EditorPresupuesto({ id }: { id?: number }) {
               Descargar PDF
             </button>
           )}
-          {presupuesto?.emision ? (
+          {presupuesto?.emision?.estado === 'Autorizada' ? (
             <Link className="boton" to={`/facturas/${presupuesto.emision.facturaId}`}>
               Ver factura
             </Link>
-          ) : (
+          ) : presupuesto?.emision ? null : (
             presupuesto && (
               <button
                 className="boton boton-primario"
@@ -179,6 +180,12 @@ export function EditorPresupuesto({ id }: { id?: number }) {
             )
           )}
         </p>
+        {presupuesto?.emision && presupuesto.emision.estado !== 'Autorizada' && (
+          <EstadoEmision
+            emision={presupuesto.emision}
+            alCambiar={(emision) => setPresupuesto((p) => (p ? { ...p, emision } : p))}
+          />
+        )}
         {aviso && (
           <p className={`aviso aviso-${aviso.tipo}`} role={aviso.tipo === 'error' ? 'alert' : 'status'}>
             {aviso.texto}

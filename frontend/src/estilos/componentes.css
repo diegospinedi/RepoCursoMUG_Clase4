@@ -186,3 +186,5 @@ a { color: var(--color-primario); }
 
 .encabezado-seccion { justify-content: space-between; align-items: center; margin-bottom: var(--espacio-4); }
 .encabezado-seccion h1 { margin: 0; }
+
+.estado-emision { margin-bottom: var(--espacio-4); }
