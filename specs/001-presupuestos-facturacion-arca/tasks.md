@@ -312,7 +312,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 
 - [X] T111 [P] Write and pass a test that the security log records login failures, lockouts, password changes and resets and configuration changes with date and time (FR-005d), and never contains passwords, DNI or client names; and that ARCA and import error responses expose no other clients' data or stack traces (FR-041a) in `tests/Optica.Tests/Acceso/RegistroSeguridadTests.cs`
 - [X] T112 Configure the production build: Vite `build.outDir` → `backend/Optica.Api/wwwroot` in `frontend/vite.config.ts`, and verify the API serves the SPA with fallback (research R4)
-- [ ] T113 [P] Update `AGENTS.md` ("Cómo correr" para producción con el frontend servido por la API; nuevas dependencias ClosedXML, QRCoder y PdfPig)
+- [X] T113 [P] Update `AGENTS.md` ("Cómo correr" para producción con el frontend servido por la API; nuevas dependencias ClosedXML, QRCoder y PdfPig)
 - [ ] T114 Run the full verification (`dotnet test Optica.slnx`, including traits `Rendimiento`; `cd frontend && npm test && npm run build && npm run lint`) and fix failures
 - [ ] T115 Run the manual walkthroughs 1–12 of `specs/001-presupuestos-facturacion-arca/quickstart.md` in Chrome and Edge (stable and previous, RNF-03, SC-008) and record the results in `specs/001-presupuestos-facturacion-arca/quickstart.md`
 

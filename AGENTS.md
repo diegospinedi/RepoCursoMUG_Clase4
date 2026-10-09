@@ -36,12 +36,25 @@ npm run dev        # Vite en http://localhost:5173, con proxy de /api a la API
 ```
 
 La primera vez, la app pide definir la contraseña de acceso; solo se acepta desde la PC donde corre la API.
+En desarrollo el proxy de Vite hace que todo pedido parezca local: esa restricción se prueba con los tests.
+
+En la PC del local (producción) la API sirve también el frontend compilado, en un solo proceso y mismo origen:
+```bash
+cd frontend && npm run build                 # deja el frontend en backend/Optica.Api/wwwroot
+cd ../backend/Optica.Api
+ASPNETCORE_ENVIRONMENT=Production dotnet run --no-launch-profile --urls http://0.0.0.0:5220
+```
+No pongas un proxy delante: la API decide qué pedidos son locales por la IP remota (research R4).
+Para cambiar `Arca:Simulador:Modo` sin reiniciar desde WSL sobre `/mnt/c`, arrancá con
+`DOTNET_USE_POLLING_FILE_WATCHER=1` (los cambios de archivo no se notifican en ese disco).
 
 Tests y verificación (correr los tres del frontend: Vitest no revisa tipos, el build sí):
 ```bash
 dotnet test Optica.slnx
 cd frontend && npm test && npm run build && npm run lint
 ```
+Los tests de rendimiento (RNF-01, RNF-11, RNF-12, SC-009) llevan el trait `Categoria=Rendimiento` y corren
+con el resto; para correr solo esos: `dotnet test Optica.slnx --filter Categoria=Rendimiento`.
 Si `dotnet test` falla con "Access to the path ... Optica.Api.dll is denied", hay una API corriendo
 que bloquea `bin/Debug`: cerrala o usá `dotnet test Optica.slnx -c Release`.
 
@@ -65,6 +78,12 @@ Se edita en el archivo, no en la interfaz: el certificado de ARCA y el punto de 
 - `frontend/src/`: una carpeta por pantalla. Antes de tocar estilos o pantallas, usá la skill
   `frontend-design` (`.claude/skills/frontend-design`): colores y fuentes salen de `Marca/branding.json`
   y de los tokens de `estilos/tokens.css`, nunca escritos a mano.
+
+## Dependencias principales
+- Backend: EF Core 10 (SQLite), ClosedXML (planillas del proveedor), QuestPDF (PDF, licencia Community),
+  QRCoder (QR de ARCA). Tests: xUnit, Mvc.Testing, TimeProvider.Testing y PdfPig (leer los PDF).
+- Frontend: React Router, `@fontsource` (Montserrat y Barlow sin internet), Vitest + Testing Library y oxlint.
+- Las fuentes TTF de los PDF están en `backend/Optica.Api/Recursos/` con su licencia OFL.
 
 ## Qué NO hacer
 - **No modificar registros cerrados.** Un presupuesto en estado Final no se edita ni vuelve a Borrador (RF-08, RF-67), y una factura con CAE no se modifica ni se elimina (RF-32). No agregues endpoints, migraciones ni "fixes" que permitan eso. La base lo refuerza con triggers de SQLite (migraciones `CierrePresupuestos` y `FacturasInmutablesYBusqueda`): no los borres. Para cargar datos de prueba, el presupuesto se graba en Borrador y después pasa a Final, como en la app.
