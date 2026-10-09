@@ -226,7 +226,7 @@ Borrador no lo permite y ejecutar las búsquedas de los ejemplos.
 
 - [X] T081 [P] [US5] Write failing tests for search in `tests/Optica.Tests/Presupuestos/BusquedaPresupuestosTests.cs`: "ONZALEZ" devuelve solo "González" (AC-03); "González" con Desde 15/03/2026 → solo el del 20/03 (AC-68); Desde 10/03 Hasta 20/03 → solo 10 y 20 (AC-69); DNI "3456" → el cliente 23.456.789 (AC-87)
 - [X] T082 [P] [US5] Write failing tests for the PDF in `tests/Optica.Tests/Presupuestos/PdfPresupuestoTests.cs`: Borrador → 409 `presupuesto-borrador` sin generar PDF (AC-08); Final → `application/pdf` whose text (read with PdfPig) contains "Precios finales, IVA incluido", the number, the client and the lines (AC-02, AC-09, AC-37), the first page contains the logo image (FR-040) and no text discriminates IVA (FR-022)
-- [ ] T083 [P] [US5] Write a failing performance test (trait `Rendimiento`): con 10.000 presupuestos, 19 de 20 búsquedas por apellido responden en menos de 2 segundos (RNF-01; la medición en pantalla queda en el quickstart) in `tests/Optica.Tests/Presupuestos/BusquedaRendimientoTests.cs`
+- [X] T083 [P] [US5] Write a failing performance test (trait `Rendimiento`): con 10.000 presupuestos, 19 de 20 búsquedas por apellido responden en menos de 2 segundos (RNF-01; la medición en pantalla queda en el quickstart) in `tests/Optica.Tests/Presupuestos/BusquedaRendimientoTests.cs`
 - [ ] T084 [P] [US5] Write failing tests for the search screen and the PDF button (deshabilitado en Borrador) in `frontend/src/presupuestos/BuscarPresupuestos.test.tsx`
 
 ### Implementation for User Story 5
