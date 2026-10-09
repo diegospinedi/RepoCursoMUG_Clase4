@@ -24,6 +24,9 @@ public sealed class EspiaArca : IServicioArca
     /// <summary>Autoriza y no responde.</summary>
     public bool AutorizarSinResponder { get; set; }
 
+    /// <summary>Se ejecuta al recibir cada solicitud, antes de responder (para inspeccionar la base en ese momento).</summary>
+    public Action<SolicitudComprobante>? AlSolicitar { get; set; }
+
     /// <summary>Demora real de ARCA, para medir el tiempo propio del sistema.</summary>
     public TimeSpan Demora { get; set; }
 
@@ -42,6 +45,7 @@ public sealed class EspiaArca : IServicioArca
     {
         Llamadas.Enqueue(nameof(SolicitarCaeAsync));
         Solicitudes.Enqueue(s);
+        AlSolicitar?.Invoke(s);
         if (Demora > TimeSpan.Zero) await Task.Delay(Demora, ct);
         if (Rechazo is not null) return Rechazo;
         if (SinRespuesta) throw new ArcaSinRespuestaException();
