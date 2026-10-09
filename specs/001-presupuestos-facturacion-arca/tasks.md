@@ -110,7 +110,7 @@ la inactividad con reloj falso, y comprobar que sin sesión todo endpoint respon
 
 ### Implementation for User Story 1
 
-- [ ] T035 [US1] Create the `Acceso` entity (single row Id = 1; `HashContrasena` "null hasta la primera definición; PBKDF2 con sal", `IntentosFallidos` "0–5", `BloqueadoHasta` "null o ahora + 5 minutos tras el 5.º fallo", `SelloSeguridad`) in `backend/Optica.Api/Acceso/EstadoAcceso.cs`, register it in `OpticaDbContext` and add migration `Acceso`
+- [X] T035 [US1] Create the `Acceso` entity (single row Id = 1; `HashContrasena` "null hasta la primera definición; PBKDF2 con sal", `IntentosFallidos` "0–5", `BloqueadoHasta` "null o ahora + 5 minutos tras el 5.º fallo", `SelloSeguridad`) in `backend/Optica.Api/Acceso/EstadoAcceso.cs`, register it in `OpticaDbContext` and add migration `Acceso`
 - [ ] T036 [P] [US1] Implement `EsPedidoLocal` (loopback check on `HttpContext.Connection.RemoteIpAddress`, never forwarded headers) in `backend/Optica.Api/Acceso/EsPedidoLocal.cs`
 - [ ] T037 [US1] Implement `ServicioAcceso` (`PasswordHasher<T>` PBKDF2, lockout with `TimeProvider`, `SelloSeguridad` rotation on cambio/restablecimiento, security log entries without secrets or personal data per research R15) in `backend/Optica.Api/Acceso/ServicioAcceso.cs`
 - [ ] T038 [US1] Configure cookie authentication in `backend/Optica.Api/Program.cs` (`HttpOnly`, `SameSite=Strict`, sliding expiration 60 minutes using the registered `TimeProvider` via `CookieAuthenticationOptions.TimeProvider` so `FakeTimeProvider` controls the expiry, 401 instead of redirect, `OnValidatePrincipal` compares `SelloSeguridad`, fallback policy requiring an authenticated user for `/api/*`; `/api/acceso/*` and the SPA fallback are anonymous)
