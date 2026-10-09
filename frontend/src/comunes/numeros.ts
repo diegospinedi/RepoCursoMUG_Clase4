@@ -16,3 +16,8 @@ export function aNumero(texto: string): number | null {
 export function aCentavos(pesos: number): number {
   return Math.round(pesos * 100)
 }
+
+/** "23456789" → "23.456.789". */
+export function formatearDni(digitos: string): string {
+  return digitos.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}

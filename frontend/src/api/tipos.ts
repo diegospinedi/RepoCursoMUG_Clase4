@@ -85,3 +85,14 @@ export interface Presupuesto {
   total: number
   emision?: { facturaId: number; estado: EstadoEmision } | null
 }
+
+export interface PresupuestoResumen {
+  id: number
+  numero: number
+  fecha: string
+  estado: EstadoPresupuesto
+  apellido: string
+  nombre: string
+  dni: string
+  total: number
+}

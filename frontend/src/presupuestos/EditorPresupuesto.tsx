@@ -131,6 +131,17 @@ export function EditorPresupuesto({ id }: { id?: number }) {
           )}
         </h1>
         {presupuesto && <p>Fecha: {formatearFecha(presupuesto.fecha)}</p>}
+        <p className="fila">
+          {presupuesto?.estado === 'Final' ? (
+            <a className="boton" href={`/api/presupuestos/${presupuesto.id}/pdf`} download>
+              Descargar PDF
+            </a>
+          ) : (
+            <button className="boton" type="button" disabled title="El PDF se genera cuando el presupuesto está en estado Final.">
+              Descargar PDF
+            </button>
+          )}
+        </p>
         {aviso && (
           <p className={`aviso aviso-${aviso.tipo}`} role={aviso.tipo === 'error' ? 'alert' : 'status'}>
             {aviso.texto}

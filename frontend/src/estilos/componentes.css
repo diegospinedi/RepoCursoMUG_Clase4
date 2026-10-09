@@ -183,3 +183,6 @@ a { color: var(--color-primario); }
 .leyenda { text-align: right; font-size: var(--texto-sm); color: var(--color-texto-suave); }
 .casilla { display: flex; gap: var(--espacio-2); align-items: center; }
 .buscador { margin-bottom: var(--espacio-4); }
+
+.encabezado-seccion { justify-content: space-between; align-items: center; margin-bottom: var(--espacio-4); }
+.encabezado-seccion h1 { margin: 0; }

@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react'
-import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router'
+import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router'
 import { pedir } from './api/cliente'
 import { Articulos } from './articulos/Articulos'
 import { CambiarContrasena } from './acceso/CambiarContrasena'
@@ -7,6 +7,7 @@ import { SesionContexto } from './acceso/SesionContexto'
 import { Configuracion } from './configuracion/Configuracion'
 import { Importacion } from './importacion/Importacion'
 import { aplicarMarca, marca } from './marca'
+import { BuscarPresupuestos } from './presupuestos/BuscarPresupuestos'
 import { PaginaPresupuesto } from './presupuestos/PaginaPresupuesto'
 import { Proveedores } from './proveedores/Proveedores'
 
@@ -52,20 +53,13 @@ export default function App() {
         <SesionContexto>
           <Routes>
             <Route path="/presupuestos/:id" element={<PaginaPresupuesto />} />
-            <Route
-              path="/presupuestos"
-              element={
-                <Link className="boton boton-primario" to="/presupuestos/nuevo">
-                  Nuevo presupuesto
-                </Link>
-              }
-            />
+            <Route path="/presupuestos" element={<BuscarPresupuestos />} />
             <Route path="/articulos" element={<Articulos />} />
             <Route path="/configuracion" element={<Configuracion />} />
             <Route path="/importacion" element={<Importacion />} />
             <Route path="/proveedores" element={<Proveedores />} />
             <Route path="/contrasena" element={<CambiarContrasena />} />
-            <Route path="*" element={<h1>Óptica Sistema</h1>} />
+            <Route path="*" element={<Navigate to="/presupuestos" replace />} />
           </Routes>
         </SesionContexto>
       </main>
