@@ -141,7 +141,7 @@ ejemplos numéricos del PRD.
 ### Implementation for User Story 2
 
 - [X] T047 [P] [US2] Create the `Configuracion` entity (single row Id = 1; `AlicuotaIva` "requerido; solo 0; 2,5; 5; 10,5; 21 o 27", `CondicionFiscal` "`ResponsableInscripto` o `Monotributo`", `TopeIdentificacion` "> 0 y ≤ 999.999.999,99; inicial 10.000.000,00", `MultiploRedondeo` "0,01 a 1.000; inicial 0,01", `MargenPredeterminado` "null (sin configurar) o 0 a 1000") with seed RI e IVA 21 in `backend/Optica.Api/Configuracion/Configuracion.cs`
-- [ ] T048 [P] [US2] Create the `Proveedor` entity (`Nombre` "requerido; 1–100 caracteres; único sin distinguir mayúsculas") in `backend/Optica.Api/Catalogo/Proveedor.cs`
+- [X] T048 [P] [US2] Create the `Proveedor` entity (`Nombre` "requerido; 1–100 caracteres; único sin distinguir mayúsculas") in `backend/Optica.Api/Catalogo/Proveedor.cs`
 - [ ] T049 [P] [US2] Create the `Articulo` entity (`Codigo` autonumérico; `CodigoProveedor` "requerido; 1–50 caracteres; único por `(ProveedorId, CodigoProveedor)` con comparación binaria, sensible a mayúsculas y espacios"; `Descripcion` "requerido; 1–200 caracteres"; `PrecioCosto` "2 decimales; a mano, ≥ 0"; `Margen` "0 a 1000, hasta 2 decimales"; `PrecioVenta` calculado; `DescripcionBusqueda` derivado) in `backend/Optica.Api/Catalogo/Articulo.cs`
 - [ ] T050 [US2] Register Configuracion, Proveedor and Articulo in `backend/Optica.Api/Datos/OpticaDbContext.cs` (unique index `(ProveedorId, CodigoProveedor)` with `COLLATE BINARY`) and add migration `CatalogoYConfiguracion`
 - [ ] T051 [US2] Implement `ServicioPrecios` (precio de venta via `Calculadora` with the current múltiplo; recálculo de todo el catálogo en una transacción) in `backend/Optica.Api/Catalogo/ServicioPrecios.cs`
