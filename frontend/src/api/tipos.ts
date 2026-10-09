@@ -96,3 +96,35 @@ export interface PresupuestoResumen {
   dni: string
   total: number
 }
+
+export interface FacturaEmitida {
+  facturaId: number
+  estado: EstadoEmision
+  tipo: 'B' | 'C'
+  puntoVenta: number
+  numero: number
+  cae: string | null
+  vencimientoCae: string | null
+}
+
+export interface FacturaDetalle {
+  id: number
+  estado: EstadoEmision
+  tipo: 'B' | 'C'
+  puntoVenta: number
+  numero: number
+  fecha: string
+  receptorDocTipo: number
+  receptorDocNro: string
+  total: number
+  neto: number | null
+  iva: number | null
+  alicuotaIva: number | null
+  cae: string | null
+  vencimientoCae: string | null
+  presupuesto: { id: number; numero: number }
+  apellido: string
+  nombre: string
+  dni: string
+  lineas: { descripcion: string; cantidad: number; precioFinal: number }[]
+}

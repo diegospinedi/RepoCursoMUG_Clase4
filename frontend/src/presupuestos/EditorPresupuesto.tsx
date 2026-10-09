@@ -1,10 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { ErrorValidacion, pedir } from '../api/cliente'
-import type { Articulo, Presupuesto } from '../api/tipos'
+import { Link } from 'react-router'
+import { ErrorApi, ErrorValidacion, pedir } from '../api/cliente'
+import type { Articulo, FacturaEmitida, Presupuesto } from '../api/tipos'
 import { calcularTotal, formatearImporte } from '../calculos/lineas'
 import { CampoConError } from '../comunes/CampoConError'
 import { formatearFecha } from '../comunes/fechas'
-import { aCentavos, aTexto } from '../comunes/numeros'
+import { aCentavos, aTexto, numeroComprobante } from '../comunes/numeros'
 import { BuscadorArticulos } from './BuscadorArticulos'
 import { GrillaLineas } from './GrillaLineas'
 import { importesLinea, type LineaEditable } from './lineasEditables'
@@ -55,6 +56,7 @@ export function EditorPresupuesto({ id }: { id?: number }) {
   const [errores, setErrores] = useState<Record<string, string>>({})
   const [aviso, setAviso] = useState<{ tipo: 'exito' | 'error'; texto: string }>()
   const [cargado, setCargado] = useState(id === undefined)
+  const [facturando, setFacturando] = useState(false)
 
   function mostrar(p: Presupuesto) {
     setPresupuesto(p)
@@ -119,6 +121,24 @@ export function EditorPresupuesto({ id }: { id?: number }) {
     }
   }
 
+  async function facturar() {
+    if (!presupuesto) return
+    setAviso(undefined)
+    setFacturando(true)
+    try {
+      const f = await pedir<FacturaEmitida>(`/api/presupuestos/${presupuesto.id}/factura`, { method: 'POST' })
+      setPresupuesto({ ...presupuesto, emision: { facturaId: f.facturaId, estado: f.estado } })
+      setAviso({ tipo: 'exito', texto: `Factura ${f.tipo} ${numeroComprobante(f.puntoVenta, f.numero)} autorizada. CAE ${f.cae}.` })
+    } catch (error) {
+      if (!(error instanceof ErrorApi)) throw error
+      const facturaId = typeof error.datos.facturaId === 'number' ? error.datos.facturaId : undefined
+      if (facturaId) setPresupuesto({ ...presupuesto, emision: { facturaId, estado: 'Pendiente' } })
+      setAviso({ tipo: 'error', texto: error.titulo ?? 'No se pudo facturar. Probá de nuevo.' })
+    } finally {
+      setFacturando(false)
+    }
+  }
+
   if (!cargado) return null
 
   return (
@@ -140,6 +160,23 @@ export function EditorPresupuesto({ id }: { id?: number }) {
             <button className="boton" type="button" disabled title="El PDF se genera cuando el presupuesto está en estado Final.">
               Descargar PDF
             </button>
+          )}
+          {presupuesto?.emision ? (
+            <Link className="boton" to={`/facturas/${presupuesto.emision.facturaId}`}>
+              Ver factura
+            </Link>
+          ) : (
+            presupuesto && (
+              <button
+                className="boton boton-primario"
+                type="button"
+                disabled={presupuesto.estado !== 'Final' || facturando}
+                title={presupuesto.estado !== 'Final' ? 'Solo se factura un presupuesto en estado Final.' : undefined}
+                onClick={() => void facturar()}
+              >
+                Facturar
+              </button>
+            )
           )}
         </p>
         {aviso && (

@@ -21,3 +21,8 @@ export function aCentavos(pesos: number): number {
 export function formatearDni(digitos: string): string {
   return digitos.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
+
+/** 3, 1 → "0003-00000001". */
+export function numeroComprobante(puntoVenta: number, numero: number): string {
+  return `${String(puntoVenta).padStart(4, '0')}-${String(numero).padStart(8, '0')}`
+}
