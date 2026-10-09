@@ -5,6 +5,7 @@ import { CambiarContrasena } from './acceso/CambiarContrasena'
 import { SesionContexto } from './acceso/SesionContexto'
 import { Configuracion } from './configuracion/Configuracion'
 import { aplicarMarca, marca } from './marca'
+import { Proveedores } from './proveedores/Proveedores'
 
 const secciones = [
   { ruta: '/presupuestos', nombre: 'Presupuestos' },
@@ -48,6 +49,7 @@ export default function App() {
         <SesionContexto>
           <Routes>
             <Route path="/configuracion" element={<Configuracion />} />
+            <Route path="/proveedores" element={<Proveedores />} />
             <Route path="/contrasena" element={<CambiarContrasena />} />
             <Route path="*" element={<h1>Óptica Sistema</h1>} />
           </Routes>
