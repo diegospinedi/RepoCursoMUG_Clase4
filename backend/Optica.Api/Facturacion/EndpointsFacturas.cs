@@ -9,6 +9,8 @@ namespace Optica.Api.Facturacion;
 public static class EndpointsFacturas
 {
     public sealed record EmitidaDto(int FacturaId, EstadoFactura Estado, string Tipo, int PuntoVenta, long Numero, string? Cae, DateOnly? VencimientoCae);
+    public sealed record ResumenDto(int Id, EstadoFactura Estado, string Tipo, int PuntoVenta, long Numero, DateOnly Fecha,
+        string Apellido, string Nombre, decimal Total, int PresupuestoNumero);
     public sealed record LineaDto(string Descripcion, int Cantidad, decimal PrecioFinal);
     public sealed record OrigenDto(int Id, int Numero);
     public sealed record DetalleDto(
@@ -37,6 +39,13 @@ public static class EndpointsFacturas
                     title: "Solo se confirma la revisión de una emisión bloqueada."),
                 _ => Results.NotFound(),
             });
+
+        app.MapGet("/api/facturas", async (EstadoFactura? estado, string? apellido, string? nombre, string? dni, string? numero,
+            DateOnly? desde, DateOnly? hasta, OpticaDbContext db) =>
+            await BusquedaFacturas.Filtrar(db.Set<Factura>().AsNoTracking(), estado, apellido, nombre, dni, numero, desde, hasta)
+                .Select(f => new ResumenDto(f.Id, f.Estado, f.Tipo == TipoComprobante.FacturaB ? "B" : "C", f.PuntoVenta, f.Numero, f.Fecha,
+                    f.Apellido, f.Nombre, f.Total, f.Presupuesto!.Numero))
+                .ToListAsync());
 
         app.MapGet("/api/facturas/{id:int}", async (int id, OpticaDbContext db) =>
             await db.Set<Factura>().AsNoTracking().Include(f => f.Presupuesto!).ThenInclude(p => p.Lineas).SingleOrDefaultAsync(f => f.Id == id) is { } f

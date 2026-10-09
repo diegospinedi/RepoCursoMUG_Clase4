@@ -301,7 +301,7 @@ autorizar sin responder, facturar y reintentar, verificando cada estado.
 
 ### Implementation for User Story 8
 
-- [ ] T109 [US8] Implement `BusquedaFacturas` and `GET /api/facturas` per `contracts/api-http.md` in `backend/Optica.Api/Facturacion/BusquedaFacturas.cs` and `backend/Optica.Api/Facturacion/EndpointsFacturas.cs`
+- [X] T109 [US8] Implement `BusquedaFacturas` and `GET /api/facturas` per `contracts/api-http.md` in `backend/Optica.Api/Facturacion/BusquedaFacturas.cs` and `backend/Optica.Api/Facturacion/EndpointsFacturas.cs`
 - [ ] T110 [US8] Implement the invoice list screen in `frontend/src/facturas/ListadoFacturas.tsx`
 
 ---
